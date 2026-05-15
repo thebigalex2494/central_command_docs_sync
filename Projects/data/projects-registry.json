@@ -1,0 +1,1297 @@
+{
+    "version": "1.0.0",
+    "created": "2026-01-17T00:00:00Z",
+    "last_scan": "2026-05-12T00:00:00Z",
+    "last_updated": "2026-05-12T00:00:00Z",
+    "scan_locations": [
+        "C:\\Users\\msi\\central_command\\Projects",
+        "%DRIVE%\\grupo_del_valle"
+    ],
+    "projects": [
+        {
+            "id": "proj-000",
+            "name": "Central Command Core",
+            "path": "C:\\Users\\msi\\central_command",
+            "type": "agent-system",
+            "status": "WSL-Native v7.1 SAt (Hybrid Triad Validated)",
+            "priority": "high",
+            "description": "Orquestador central del ecosistema Central Command. Gestiona la coordinación de agentes, el registro de proyectos y la ejecución de skills globales.",
+            "last_activity": "2026-05-08",
+            "indicators": {
+                "has_requirements": true,
+                "has_tests": true,
+                "has_notebooks": false
+            },
+            "skills": [
+                {
+                    "name": "caveman-mode",
+                    "path": "C:\\Users\\msi\\.gemini\\antigravity\\knowledge\\caveman_mode_skill.md",
+                    "version": "1.0.0",
+                    "agents": [
+                        "claude",
+                        "gemini"
+                    ],
+                    "scope": "global",
+                    "status": "valid"
+                }
+            ]
+        },
+        {
+            "id": "proj-001",
+            "name": "Reportes Ventas Nacional",
+            "path": "C:\\Users\\msi\\central_command\\Projects\\reportes_ventas_nacional",
+            "type": "data-pipeline",
+            "status": "Migrated (DuckDB/Parquet Architecture - 100% Parity)",
+            "priority": "high",
+            "loader_compatible": true,
+            "ai_stack": [
+                "claude",
+                "gemini"
+            ],
+            "skills": [
+                {
+                    "name": "skill-ron-processor",
+                    "path": "C:\\Users\\msi\\central_command\\tools\\skills\\skill-ron-processor",
+                    "version": "2.0.0",
+                    "agents": [
+                        "claude",
+                        "gemini"
+                    ],
+                    "scope": "project",
+                    "last_updated": "2026-05-08",
+                    "status": "valid"
+                }
+            ],
+            "frameworks": [
+                "pandas",
+                "duckdb",
+                "parquet",
+                "openpyxl",
+                "pytest",
+                "black",
+                "flake8",
+                "mypy",
+                "google-apps-script",
+                "appsheet",
+                "pywin32"
+            ],
+            "description": "Pipeline nacional de ventas (Local-First). Ejecuta en C: y publica en I: (Drive) via Sync Bridge. Incluye Ultra-Sync Engine (SQL-Ready) para inyección directa en GSheet/AppSheet con frecuencia configurable.",
+            "last_activity": "2026-05-15",
+            "indicators": {
+                "has_requirements": true,
+                "has_tests": true,
+                "has_notebooks": true
+            },
+            "test_coverage": "93%+",
+            "test_files": 52,
+            "loc": 57043,
+            "active_audits": [
+                "AUDIT_GAS_SYNC_HARDENING (Grade A+, 2026-05-11)",
+                "AUDIT_SPRINT1_INGESTION_HARDENING (Grade A+, 2026-05-14)",
+                "AUDIT_SPRINT2_ANALYTICAL_PARITY (Grade A+, 2026-05-15)",
+                "AUDIT_SPRINT3_PRESENTATION_INTEGRATION (Grade A+, 2026-05-15)"
+            ],
+            "backlog": [
+                {
+                    "id": "BL-041",
+                    "module": "report_generation/main.py",
+                    "priority": "low",
+                    "title": "COMPARATIVA_DIARIA: scaffold calendario completo",
+                    "description": "DÃ­as sin ventas no aparecen en COMPARATIVA_DIARIA. Agregar scaffold de dÃ­as 1-N (segÃºn mes) Ã— localidades con left join, rellenando $0 en dÃ­as sin actividad. Afecta lÃ­neas ~708-787 y ~2347-2414.",
+                    "status": "completed",
+                    "created": "2026-02-18",
+                    "impact": "visual â€” no afecta cÃ¡lculos downstream"
+                },
+                {
+                    "id": "BL-042",
+                    "module": "report_generation/main.py",
+                    "priority": "low",
+                    "title": "COMPARATIVA_DIARIA: Dia=99 sentinel visible en Excel",
+                    "description": "La fila TOTAL por localidad usa Dia=99 como sentinel. Consumers (chart_exporter, generator, email_dashboard) ya filtran correctamente. No afecta lÃ³gica pero es confuso visualmente en Excel. Considerar reemplazar por label 'TOTAL'.",
+                    "status": "completed",
+                    "created": "2026-02-18",
+                    "impact": "cosmÃ©tico â€” no afecta lÃ³gica ni downstream"
+                }
+            ],
+            "sub_projects": [
+                {
+                    "id": "proj-001-sub-001",
+                    "name": "services_sync_appsheet",
+                    "type": "appsheet-integration",
+                    "status": "active (RAW priority enforced, LY integrity fix applied)",
+                    "version": "3.0",
+                    "description": "Sync pipeline ETLâ†’Driveâ†’GSheetâ†’AppSheet. GAS multi-destino con auto-detecciÃ³n por ID de spreadsheet (v3.0). 13 archivos .gs, 77 funciones. Triggers: pipeline horario + email 2x diario. cat_personal con 12/16 correos poblados (2026-03-19). Espejo read-only con resumen incidencias. CorporateMailer wrapper HTML. ValidaciÃ³n discrepancias + pendientes_revision.",
+                    "audit_status": "audited",
+                    "last_audit": "2026-03-19",
+                    "gas_path": "src/google_apps_script/services_sync_manager/",
+                    "deploys": [
+                        "deploy_can",
+                        "deploy_pdc"
+                    ],
+                    "identification": "by_spreadsheet_id",
+                    "drive_ids": {
+                        "carpeta_maestra": "109K5yyHZl2v7Bcwnw8XwOekE_CIJii-5",
+                        "staging_qroo": "1XNFKp5hMlE_6g0zUTmEIZkfJJfjcrMKl",
+                        "spreadsheet_pdc": "1QDSxdyUBvjEUmgf8LXoSxOwF2yNpS6QGJvIkeE0yLo0"
+                    },
+                    "tables": [
+                        "inicio",
+                        "inicio_fuente",
+                        "registro",
+                        "cambios",
+                        "pendientes_revision",
+                        "cat_incidencias",
+                        "cat_clientes",
+                        "cat_operadores",
+                        "cat_personal",
+                        "incidencias"
+                    ],
+                    "open_issues": [
+                        "ISSUE-008: Tabla cat_operadores redundante (MEDIUM)",
+                        "H5: obtenerEmailsPorRol() no conectado al flujo email (HIGH)",
+                        "H10: DATOS_CAT_OPERADORES desactualizado 45 vs ~573 (MEDIUM)"
+                    ],
+                    "documentation": "%HOME%\\Documents\\Reports\\APPSHEET_AUDIT.md"
+                },
+                {
+                    "id": "proj-001-sub-002",
+                    "name": "email_service_gas",
+                    "type": "gas-webapp",
+                    "status": "active (RAW priority enforced, LY integrity fix applied)",
+                    "version": "1.2.0",
+                    "description": "GAS Standalone Web App para envÃ­o de emails corporativos con template estÃ¡ndar AEV (620px, logo centrado, firma corporativa, citas inspiracionales, disclaimers legales). CorporateMailer.sendEmail() enforces wrapper automÃ¡ticamente â€” imposible enviar email sin branding. 5 plantillas dinÃ¡micas, Web UI con preview, grupos de destinatarios por regiÃ³n, y API doPost. Deploy v3 operativo.",
+                    "created": "2026-02-20",
+                    "last_activity": "2026-02-21",
+                    "gas_path": "src/google_apps_script/email_service/",
+                    "deploy_url": "https://script.google.com/macros/s/AKfycbwn-WIvZfyr4kixnu_EDG82rh5T-hHIaR6Pqfug72QYZvtP5o5GiMsOvrP0raRoQ1pT/exec",
+                    "script_id": "1Rh0ZjbcHCKNNY1YloKgqQJivsmPoPVKIs3KQLK01GE7NTyaceF3DVBAw",
+                    "templates": [
+                        "test_email - Email de prueba para verificar pipeline",
+                        "saldos_rutas - Prompt #5: ValidaciÃ³n saldos operativos 2025-2026 + nuevas rutas",
+                        "pipeline_status - Resumen ejecuciÃ³n ETL (success/error/warning)",
+                        "appsheet_pilot - Prompt #4: Reporte piloto AppSheet con KPIs y cronograma",
+                        "custom - Email HTML libre con wrapper corporativo"
+                    ],
+                    "recipient_groups": [
+                        "TEST",
+                        "DIRECCION",
+                        "GUERRERO",
+                        "HIDALGO",
+                        "VALLARTA",
+                        "YUCATAN",
+                        "MONTERREY",
+                        "GUADALAJARA",
+                        "MEXICO",
+                        "BAJA CALIFORNIA SUR",
+                        "PUERTO PENASCO"
+                    ],
+                    "architecture": "GAS Standalone â†’ CorporateMailer.sendEmail() con wrapper AEV estÃ¡ndar enforced internamente (header blanco+logo, 620px, firma #002D62/#00A6CE, citas Georgia italic, legal UPPERCASE, MSO conditionals para Outlook). Dual inline images: cid:logoHeader + cid:logoSignature.",
+                    "files": [
+                        "Code.gs",
+                        "Config.gs",
+                        "Mailer.gs",
+                        "Templates.gs",
+                        "Index.html",
+                        "appsscript.json"
+                    ],
+                    "related_to": [
+                        "proj-001-sub-003"
+                    ],
+                    "changelog": [
+                        "v1.0.0 (2026-02-20) - Initial deploy: 5 templates, Web UI, API doPost, CorporateMailer con wrapper custom",
+                        "v1.1.0 (2026-02-21) - Refactor: wrapContent() movido dentro de sendEmail() para enforced wrapping obligatorio",
+                        "v1.2.0 (2026-02-21) - Complete rewrite de Mailer.gs para match con template estÃ¡ndar AEV de aev_email_generator (620px, white header, logo centrado, firma #002D62, citas inspiracionales, legal UPPERCASE, MSO conditionals)"
+                    ],
+                    "open_issues": []
+                },
+                {
+                    "id": "proj-001-sub-003",
+                    "name": "drive_relay_email",
+                    "type": "email-architecture",
+                    "status": "active (RAW priority enforced, LY integrity fix applied)",
+                    "version": "1.0.0",
+                    "description": "Arquitectura Drive-Relay: Python (producer) genera JSON email instructions â†’ Google Drive outbox/ â†’ GAS EmailProcessor (consumer) â†’ MailApp. Soporta attachments, retry con max 3 intentos, archivado a sent/failed. Bug fix pendiente: getFiles() en vez de getFilesByType(PLAIN_TEXT).",
+                    "created": "2026-02-20",
+                    "last_activity": "2026-02-20",
+                    "gas_path": "src/google_apps_script/ventas/EmailProcessor.gs",
+                    "python_module": "src/modules/email_notifier/email_sender.py (drive_relay mode)",
+                    "python_templates": "src/modules/email_data/email_templates.py",
+                    "drive_folders": {
+                        "outbox": "1qw_mTXO9JULJHMm24VZgjwMMbnwnK_B0",
+                        "sent": "1904eVwNBfOtuBR4d0tnmZtL4Qz75nf3i",
+                        "failed": "13pBPrFDVkPnjxIqgPiKLeS8kqqnrFojo"
+                    },
+                    "open_issues": [
+                        "ATTACHMENTS_FOLDER_ID placeholder en Config.gs (comms/attachments/ no creada en Drive)",
+                        "3 JSONs en outbox pendientes de procesamiento (test pendiente post-fix getFiles)"
+                    ]
+                }
+            ],
+            "metadata": {
+                "estado_gerencial": "EN PRODUCCION - Hub v2 Activo",
+                "avance_actual": "90%",
+                "eta": "Por definir (Gerencia)",
+                "descripcion_clara": "Pipeline nacional de ventas que descarga servicios desde ZAM, consulta tipo de cambio diario de Banxico vÃ­a API, consume catÃ¡logos como padrÃ³n vehicular y reportes histÃ³ricos, y genera un reporte nacional de 48 pestaÃ±as. Ese reporte alimenta analÃ­ticas, comparativas y el dashboard nacional diario, incluyendo grÃ¡ficos generados mediante scripts de Python.",
+                "ecosystem_group": "ventas",
+                "timeline": {
+                    "start_date": "2026-01-01",
+                    "end_date": "2026-12-31",
+                    "current_sprint": "Sprint 7: Consolidador RON",
+                    "milestones": [
+                        "Banxico API v2",
+                        "RON Dashboard v4"
+                    ]
+                },
+                "financials": {
+                    "benchmark_role": "data_analyst_sr",
+                    "estimated_manual_hrs_month": 160,
+                    "actual_auto_hrs_month": 1,
+                    "agent_infra_cost_mxn": 5000,
+                    "automation_setup_cost_mxn": 450000,
+                    "roi_percent": 114.2,
+                    "budget_status": "healthy"
+                }
+            }
+        },
+        {
+            "id": "proj-001-gastos",
+            "name": "Gastos Nacionales (Base Utilidad)",
+            "status": "active (RAW priority enforced, LY integrity fix applied)",
+            "priority": "high",
+            "description": "MÃ³dulo central de gastos nacionales que consolida impuestos, mantenimiento, combustible, nÃ³mina y otros gastos. Incluye lÃ³gica de asignaciÃ³n de seguros y letras. Se integra con ventas para generar utilidad consolidada.",
+            "metadata": {
+                "estado_gerencial": "EN DESARROLLO",
+                "avance_actual": "50%",
+                "eta": "Por definir (Gerencia)",
+                "ecosystem_group": "gastos",
+                "horas_hombre_estimadas": {
+                    "total": 64
+                },
+                "descripcion_clara": "MÃ³dulo central de gastos nacionales que consolida impuestos, mantenimiento, combustible, nÃ³mina y otros gastos. Incluye lÃ³gica de asignaciÃ³n de seguros y letras. Se integra con ventas para generar utilidad consolidada."
+            },
+            "sub_projects": [
+                {
+                    "id": "proj-001-gastos-sub-001",
+                    "nombre": "Impuestos (IMSS e Infonavit)",
+                    "avance_actual": "90%",
+                    "horas_hombre_estimadas": {
+                        "total": 4
+                    }
+                },
+                {
+                    "id": "proj-001-gastos-sub-002",
+                    "nombre": "Mantenimiento",
+                    "avance_actual": "85%",
+                    "horas_hombre_estimadas": {
+                        "total": 6
+                    }
+                },
+                {
+                    "id": "proj-001-gastos-sub-003",
+                    "nombre": "Combustible/Diesel (Quintana Roo y YucatÃ¡n)",
+                    "avance_actual": "40%",
+                    "horas_hombre_estimadas": {
+                        "total": 28
+                    }
+                },
+                {
+                    "id": "proj-001-gastos-sub-004",
+                    "nombre": "NÃ³mina",
+                    "avance_actual": "95%",
+                    "horas_hombre_estimadas": {
+                        "total": 2
+                    }
+                },
+                {
+                    "id": "proj-001-gastos-sub-005",
+                    "nombre": "Otros Gastos (Quintana Roo)",
+                    "avance_actual": "80%",
+                    "horas_hombre_estimadas": {
+                        "total": 8
+                    }
+                },
+                {
+                    "id": "proj-001-gastos-sub-006",
+                    "nombre": "ExtracciÃ³n Gastos para Reportes por Sucursal",
+                    "avance_actual": "90%",
+                    "horas_hombre_estimadas": {
+                        "total": 4
+                    }
+                }
+            ],
+            "path": null
+        },
+        {
+            "id": "proj-001-resultados",
+            "name": "Reporte de Resultados Consolidado",
+            "status": "active (RAW priority enforced, LY integrity fix applied)",
+            "priority": "high",
+            "description": "Reporte consolidado de resultados que vive en Google Drive y se mantiene con Google Apps Script. Actualmente integra mÃ¡s de 30 reportes para dar visibilidad del flujo nacional. Se busca migrarlo a entorno local vÃ­a OneDrive Work para facilitar integraciÃ³n con scripts de Python y automatizaciÃ³n del mantenimiento.",
+            "metadata": {
+                "estado_gerencial": "EN PRODUCCIÃ“N / EN EVOLUCIÃ“N",
+                "avance_actual": "70%",
+                "eta": "Por definir (Gerencia)",
+                "ecosystem_group": "resultados_consolidados",
+                "horas_hombre_estimadas": {
+                    "total": 80
+                },
+                "objetivo_clave": "Formalizar y estandarizar que cada reporte/Ã¡rea tenga siempre un resumen consolidado.",
+                "descripcion_clara": "Reporte consolidado de resultados que vive en Google Drive y se mantiene con Google Apps Script. Actualmente integra mÃ¡s de 30 reportes para dar visibilidad del flujo nacional. Se busca migrarlo a entorno local vÃ­a OneDrive Work para facilitar integraciÃ³n con scripts de Python y automatizaciÃ³n del mantenimiento."
+            },
+            "path": null
+        },
+        {
+            "id": "proj-001-utilidad",
+            "name": "Utilidad Consolidada",
+            "status": "active (RAW priority enforced, LY integrity fix applied)",
+            "priority": "high",
+            "description": "Capa derivada que consolida ventas y gastos para generar reportes operativos de utilidad por regiÃ³n.",
+            "metadata": {
+                "estado_gerencial": "EN PRODUCCIÃ“N",
+                "avance_actual": "85%",
+                "eta": "Por definir (Gerencia)",
+                "ecosystem_group": "utilidad",
+                "horas_hombre_estimadas": null,
+                "descripcion_clara": "Capa derivada que consolida ventas y gastos para generar reportes operativos de utilidad por regiÃ³n."
+            },
+            "sub_projects": [
+                {
+                    "id": "proj-001-utilidad-sub-001",
+                    "nombre": "Reporte Operativo Quintana Roo",
+                    "avance_actual": "85%",
+                    "horas_hombre_estimadas": {
+                        "total": 8
+                    }
+                },
+                {
+                    "id": "proj-001-utilidad-sub-002",
+                    "nombre": "Reporte Operativo YucatÃ¡n",
+                    "avance_actual": "85%",
+                    "horas_hombre_estimadas": {
+                        "total": 8
+                    }
+                }
+            ],
+            "path": null
+        },
+        {
+            "id": "proj-002",
+            "name": "Outlook-Mailer Hub",
+            "path": "C:\\Users\\msi\\central_command\\Projects\\outlook_mailer_hub",
+            "type": "data-pipeline",
+            "status": "active (RAW priority enforced, LY integrity fix applied)",
+            "priority": "high",
+            "ai_stack": [],
+            "frameworks": [
+                "pandas",
+                "numpy",
+                "openpyxl"
+            ],
+            "description": "Capa base de infraestructura (Middleware Hub) que habilita a todos los scripts Python locales para enviar correos corporativos estandarizados de forma automatizada mediante Windows Task Scheduler y Outlook COM.",
+            "last_activity": "2026-05-08",
+            "indicators": {
+                "has_requirements": true,
+                "has_tests": true,
+                "has_notebooks": false
+            },
+            "metadata": {
+                "estado_gerencial": "OPTIMIZADO - Hardening Completo",
+                "avance_actual": "60%",
+                "eta": "Por definir (Gerencia)",
+                "descripcion_clara": "Capa base de infraestructura (Middleware Hub) que habilita a todos los scripts Python locales para enviar correos corporativos estandarizados de forma automatizada mediante Windows Task Scheduler y Outlook COM.",
+                "ecosystem_group": "infraestructura_automatizacion",
+                "horas_hombre_estimadas": {
+                    "adapter_rvn": 24,
+                    "adapter_aev_rutas": 16,
+                    "testing_documentacion": 16,
+                    "hardening": 8,
+                    "total": 64
+                },
+                "criterio_100_porciento": [
+                    "ConsolidaciÃ³n M2: Adapter RVN implementado para conectar reportes_ventas_nacional al hub.",
+                    "ConsolidaciÃ³n M2b: Adapter AEV formalizado post-merge.",
+                    "Hardening de infraestructura: eliminar hack frÃ¡gil de Outlook y centralizar path de logo corporativo.",
+                    "HabilitaciÃ³n de framework Adapter Self-Service para nuevos proyectos.",
+                    "Pruebas end-to-end y documentaciÃ³n de integraciÃ³n."
+                ]
+            },
+            "notes": "Evolucionado a herramienta compartida en tools/outlook_sender.py"
+        },
+        {
+            "id": "proj-003",
+            "name": "mvp_creator",
+            "path": null,
+            "type": "web-app",
+            "status": "archived",
+            "priority": "low",
+            "ai_stack": [
+                "supabase"
+            ],
+            "frameworks": [
+                "fastapi",
+                "uvicorn",
+                "pandas",
+                "sqlalchemy",
+                "great_expectations"
+            ],
+            "description": "MVP Creator - AplicaciÃ³n web con FastAPI, Supabase y validaciÃ³n de datos",
+            "last_activity": "2025-07-26",
+            "archived_date": "2026-02-18",
+            "archived_reason": "Sin actividad desde jul 2025 (7 meses).",
+            "indicators": {
+                "has_requirements": true,
+                "has_tests": true,
+                "has_notebooks": true
+            }
+        },
+        {
+            "id": "proj-004",
+            "name": "Control Servicios GDV",
+            "path": "C:\\Users\\msi\\central_command\\Projects\\gas_control_servicios",
+            "type": "automation",
+            "status": "active (RAW priority enforced, LY integrity fix applied)",
+            "priority": "high",
+            "ai_stack": [],
+            "frameworks": [
+                "requests"
+            ],
+            "description": "AplicaciÃ³n de Control de Servicios GDV liberada y activa en CancÃºn (CAN), atravesando fase de reestructuraciÃ³n por polÃ­ticas de Google y pendiente de despliegue para Playa del Carmen (PDC).",
+            "last_activity": "2026-01-28",
+            "indicators": {
+                "has_requirements": true,
+                "has_tests": true,
+                "has_notebooks": false
+            },
+            "metadata": {
+                "estado_gerencial": "EN PRODUCCIÃ“N",
+                "avance_actual": "50%",
+                "eta": "Por definir (Gerencia)",
+                "descripcion_clara": "AplicaciÃ³n de Control de Servicios GDV liberada y activa en CancÃºn (CAN), atravesando fase de reestructuraciÃ³n por polÃ­ticas de Google y pendiente de despliegue para Playa del Carmen (PDC).",
+                "ecosystem_group": "infraestructura_automatizacion",
+                "horas_hombre_estimadas": {
+                    "total": 80
+                },
+                "criterio_100_porciento": [
+                    "HabilitaciÃ³n de vistas de referencia en AppSheet.",
+                    "ValidaciÃ³n completa de scripting para el registro y triggers de automatizaciÃ³n de bases de datos, incluyendo revisiÃ³n del script local Python y posible refactor con SQL/ZAM.",
+                    "Scripting para reporterÃ­a y habilitaciÃ³n de mÃ³dulos faltantes en dashboard y nÃ³minas.",
+                    "ValidaciÃ³n y adecuaciÃ³n del script Python para optimizaciÃ³n funcional.",
+                    "ReconstrucciÃ³n completa de entorno espejo para PDC."
+                ]
+            }
+        },
+        {
+            "id": "proj-005",
+            "name": "Kardex Downloader",
+            "path": "C:\\Users\\msi\\central_command\\Projects\\WebTools",
+            "type": "automation",
+            "status": "active (RAW priority enforced, LY integrity fix applied)",
+            "priority": "high",
+            "ai_stack": [],
+            "frameworks": [],
+            "description": "Herramienta para descargar y consolidar movimientos de almacenes de CancÃºn, con el objetivo de comparar consumo 2025 vs 2026 y sustentar el presupuesto 2026 basado en consumo real.",
+            "last_activity": null,
+            "indicators": {
+                "has_requirements": true,
+                "has_tests": false,
+                "has_notebooks": false
+            },
+            "metadata": {
+                "estado_gerencial": "EN PRODUCCIÃ“N",
+                "avance_actual": "85%",
+                "eta": "Por definir (Gerencia)",
+                "descripcion_clara": "Herramienta para descargar y consolidar movimientos de almacenes de CancÃºn, con el objetivo de comparar consumo 2025 vs 2026 y sustentar el presupuesto 2026 basado en consumo real.",
+                "ecosystem_group": "datos_integracion",
+                "horas_hombre_estimadas": {
+                    "total": 24
+                },
+                "criterio_100_porciento": [
+                    "Confirmar exclusiÃ³n operativa de Mahahual.",
+                    "Validar que los datos correspondan Ãºnicamente a avisos de entrada.",
+                    "Ejecutar pruebas comparativas entre periodo completo vs merge de exportaciones diarias.",
+                    "Documentar criterio de validaciÃ³n y liberar versiÃ³n final para anÃ¡lisis presupuestal."
+                ],
+                "alcance_clave": [
+                    "Mahahual queda fuera del alcance operativo aunque aparezca bajo CancÃºn."
+                ]
+            }
+        },
+        {
+            "id": "proj-006",
+            "name": "Presupuesto Inventario",
+            "path": null,
+            "type": "data-pipeline",
+            "status": "paused",
+            "priority": "high",
+            "ai_stack": [],
+            "frameworks": [],
+            "description": "Modelo de presupuesto de inventario que depende de la validaciÃ³n previa del Kardex Downloader para usar datos consistentes de consumo como base del cÃ¡lculo presupuestal.",
+            "last_activity": null,
+            "indicators": {
+                "has_requirements": true,
+                "has_tests": false,
+                "has_notebooks": false
+            },
+            "metadata": {
+                "estado_gerencial": "EN ESPERA",
+                "avance_actual": "60%",
+                "eta": "Por definir (Gerencia)",
+                "descripcion_clara": "Modelo de presupuesto de inventario que depende de la validaciÃ³n previa del Kardex Downloader para usar datos consistentes de consumo como base del cÃ¡lculo presupuestal.",
+                "ecosystem_group": "datos_integracion",
+                "horas_hombre_estimadas": {
+                    "total": 26
+                },
+                "criterio_100_porciento": [
+                    "Recibir salida validada de proj-005.",
+                    "Confirmar consistencia del insumo de consumo.",
+                    "Ejecutar pruebas del modelo de presupuesto.",
+                    "Ajustar reglas o fÃ³rmulas finales y documentar criterio de cÃ¡lculo."
+                ]
+            },
+            "depends_on": [
+                "proj-005"
+            ]
+        },
+        {
+            "id": "proj-007",
+            "name": "utilidad_nacional",
+            "path": "%DRIVE%\\grupo_del_valle\\scripts python\\por_organizar\\PYTHON\\utilidad_nacional",
+            "type": "data-pipeline",
+            "status": "paused",
+            "priority": "medium",
+            "ai_stack": [],
+            "frameworks": [],
+            "description": "Utilidades para procesamiento de datos nacionales",
+            "last_activity": null,
+            "indicators": {
+                "has_requirements": true,
+                "has_tests": false,
+                "has_notebooks": false
+            }
+        },
+        {
+            "id": "proj-008",
+            "name": "gdv-analytics",
+            "path": "C:\\Users\\msi\\central_command\\Projects\\grupo_del_valle_wsl",
+            "type": "data-pipeline",
+            "status": "active (RAW priority enforced, LY integrity fix applied)",
+            "priority": "high",
+            "ai_stack": [
+                "claude",
+                "gemini"
+            ],
+            "frameworks": [
+                "duckdb",
+                "polars",
+                "pandas",
+                "pyarrow",
+                "pytest"
+            ],
+            "description": "Pipeline analitico Grupo del Valle (WSL-native). Python 3.13 + DuckDB 1.5 + Polars 1.39. CLI gdv-ventas con 10 subcomandos. 15 tablas, 11 views, 1.5M+ rows servicios. Parquet lake como fuente de verdad. 103+ tests. Exporta Excel/HTML/PNG dashboards.",
+            "last_activity": "2026-05-12",
+            "alias": "proj-027",
+            "indicators": {
+                "has_requirements": true,
+                "has_tests": true,
+                "has_notebooks": false
+            },
+            "test_coverage": "103+ tests",
+            "metadata": {
+                "estado_gerencial": "EN PRODUCCION",
+                "avance_actual": "75%",
+                "eta": "Continuo",
+                "descripcion_clara": "Pipeline analitico WSL-native para Grupo del Valle. Ingesta servicios desde API HTTP, RON mensual y tipo de cambio Banxico. Genera dashboards Excel/HTML/PNG y reportes trimestrales.",
+                "ecosystem_group": "datos_integracion",
+                "cli_entry": "gdv-ventas",
+                "wsl_workspace": "~/central_command/Projects/grupo_del_valle/",
+                "repo": "thebigalex2494/gdv-analytics (PRIVATE)",
+                "action_plan": "ACTION_PLAN.md",
+                "timeline": {
+                    "start_date": "2026-02-01",
+                    "end_date": "2026-08-30",
+                    "current_sprint": "Phase 2: Analytical DuckDB",
+                    "milestones": [
+                        "Parquet Lake v1",
+                        "DuckDB Views Optimization"
+                    ]
+                },
+                "financials": {
+                    "estimated_manual_hrs_month": 24.0,
+                    "actual_auto_hrs_month": 1.2,
+                    "roi_percent": 95.0,
+                    "budget_status": "optimized"
+                },
+                "pending_modules": [
+                    "staging_loader.py (sin tests)",
+                    "sync_ventas_to_db.py (sin tests)",
+                    "query_cli.py (sin tests)",
+                    "src/modules/report_generation/ (sin tests)"
+                ]
+            },
+            "depends_on": [
+                "proj-001"
+            ],
+            "related_projects": [
+                "proj-002",
+                "proj-009"
+            ]
+        },
+        {
+            "id": "proj-009",
+            "name": "OneDrive-Sync",
+            "path": null,
+            "type": "data-pipeline",
+            "status": "active (RAW priority enforced, LY integrity fix applied)",
+            "priority": "high",
+            "ai_stack": [],
+            "frameworks": [],
+            "description": "Proyecto para migrar y automatizar el flujo de actualización de archivos operativos hacia OneDrive Corporativo. Actualmente enfocado en la segmentación de la carpeta NACIONAL (ZAM, Correcciones, Discrepancias) y unificación de nombres regionales (QUINTANA_ROO).",
+            "last_activity": "2026-05-11",
+            "indicators": {
+                "has_requirements": true,
+                "has_tests": false,
+                "has_notebooks": false
+            },
+            "metadata": {
+                "estado_gerencial": "EN EJECUCION",
+                "avance_actual": "45%",
+                "eta": "2026-05-15",
+                "descripcion_clara": "Automatización del flujo de OneDrive para reportes nacionales. Implementación de segmentación ZAM/Correcciones/Discrepancias y normalización de sucursales.",
+                "ecosystem_group": "infraestructura_automatizacion"
+            },
+            "depends_on": [
+                "proj-008"
+            ]
+        },
+        {
+            "id": "proj-010",
+            "name": "ventas_nacional_gas",
+            "path": null,
+            "type": "automation",
+            "status": "archived",
+            "priority": "low",
+            "ai_stack": [],
+            "frameworks": [
+                "gspread"
+            ],
+            "description": "LEGACY - Monolito GAS original para ventas nacional (negocio.gs 110KB, datos.gs 62KB). Reemplazado por mÃ³dulos en proj-001 (reportes_ventas_nacional/src/google_apps_script/).",
+            "last_activity": "2025-08-15",
+            "archived_date": "2026-02-18",
+            "archived_reason": "Legacy. Funcionalidad migrada a proj-001 en mÃ³dulos GAS modulares (ventas, ventas_standalone, services_sync_manager, dashboard_bi).",
+            "indicators": {
+                "has_requirements": true,
+                "has_tests": false,
+                "has_notebooks": false
+            }
+        },
+        {
+            "id": "proj-011",
+            "name": "pystack-ai",
+            "path": "C:\\Users\\msi\\central_command\\Projects\\pystack_ai",
+            "type": "agent-system",
+            "status": "active (RAW priority enforced, LY integrity fix applied)",
+            "priority": "high",
+            "ai_stack": [
+                "claude",
+                "gemini"
+            ],
+            "frameworks": [],
+            "description": "PyStack AI - Sistema de agentes con ACL schema, self-maintenance y executive suite",
+            "last_activity": "2026-02-07",
+            "indicators": {
+                "has_requirements": false,
+                "has_tests": false,
+                "has_notebooks": false
+            }
+        },
+        {
+            "id": "proj-012",
+            "name": "pystack-ai-suite",
+            "path": "C:\\Users\\msi\\central_command\\Projects\\central_command_agent",
+            "type": "agent-system",
+            "status": "active (RAW priority enforced, LY integrity fix applied)",
+            "priority": "high",
+            "ai_stack": [
+                "claude",
+                "gemini"
+            ],
+            "frameworks": [],
+            "description": "PyStack AI Suite - Dashboard, daemon y schemas para orquestaciÃ³n de agentes",
+            "last_activity": "2026-02-07",
+            "indicators": {
+                "has_requirements": false,
+                "has_tests": false,
+                "has_notebooks": false
+            }
+        },
+        {
+            "id": "proj-013",
+            "name": "dashboard_mtto_sus",
+            "path": "%DRIVE%\\grupo_del_valle\\Documents\\POR ORGANIZAR\\Dashboard Mtto (SUS)",
+            "type": "automation",
+            "status": "archived",
+            "priority": "low",
+            "ai_stack": [
+                "claude"
+            ],
+            "frameworks": [
+                "google-apps-script"
+            ],
+            "description": "Dashboard GAS v4.2 (prod) + v4.3 (test) para Control General de Mantenimiento (SUS) â€” 347 registros, 9 estatus, 5 filas de KPI cards con tarjetas financieras separadas, grÃ¡ficos donut/column/bar/line, tabla de unidades crÃ­ticas y timeline mensual. Test: branding pastel, timeline nested, resumen financiero QUERY, exact match completo, renderKpiCard() helper.",
+            "last_activity": "2026-02-10",
+            "archived_date": "2026-02-18",
+            "archived_reason": "Dashboard completado y en producciÃ³n (v4.2 prod, v4.3 test). Sin desarrollo activo.",
+            "indicators": {
+                "has_requirements": false,
+                "has_tests": true,
+                "has_notebooks": false
+            },
+            "files": [
+                "dashboard_mantenimiento.gs",
+                "dashboard_mantenimiento_test.gs",
+                "CONTROL GENERAL MANTENIMIENTO.xlsx"
+            ],
+            "changelog": [
+                "v3 â€” KPI cards para los 5 estatus + TOTAL (sin terminadas)",
+                "Colores semÃ¡nticos en donut chart de estatus",
+                "TOTAL UNIDADES = todos - TERMINADAS",
+                "Secondary KPIs: prom dÃ­as, crÃ­ticos >365d, con fecha salida",
+                "v4 â€” Tarjetas para 7 estatus: aÃ±adidas COTIZADAS y EN REPARACION",
+                "v4 â€” Tarjeta PRESUPUESTO COTIZADO (SUMIF cols H+L) con formato moneda",
+                "v4 â€” Paleta donut actualizada a 7 colores semÃ¡nticos",
+                "v4 â€” Todas las tablas QUERY excluyen TERMINADA (excepto DISTRIBUCION POR ESTATUS)",
+                "v4 â€” Secondary KPIs: PROM DIAS y CRITICOS excluyen terminadas, aÃ±adido COTIZADAS CON PRESUPUESTO",
+                "v4 â€” FÃ³rmula DIAS EN TALLER: contador vivo vs fijo segÃºn estatus TERMINADA",
+                "v4.1 â€” 9 estatus: aÃ±adidos PRESUPUESTO APROXIMADO y COTIZADAS PRIORIDAD",
+                "v4.1 â€” Fix: COTIZADAS exact match (no wildcard) para evitar colisiÃ³n con COTIZADAS PRIORIDAD",
+                "v4.1 â€” Fix: <>TERMINADA exact negation (wildcards no soportados en COUNTIFS/AVERAGEIF)",
+                "v4.1 â€” IFERROR en todas las fÃ³rmulas de porcentaje (protecciÃ³n div/0)",
+                "v4.1 â€” Retry loop (3 intentos + backoff) para footer/charts por API throttling",
+                "v4.2 â€” Tarjetas financieras separadas: $ COTIZADAS y $ COTIZ. PRIORIDAD individuales",
+                "v4.2 â€” Fila 4 half-width: $ APROXIMADO + $ TOTAL COTIZADO lado a lado",
+                "v4.2 â€” MÃ³dulo test: dashboard_mantenimiento_test.gs con DASHBOARD_TEST",
+                "v4.3-test â€” Timeline nested QUERY (Ãºltimos 24 meses cronolÃ³gicos)",
+                "v4.3-test â€” CON FECHA SALIDA excluye TERMINADA (solo activas)",
+                "v4.3-test â€” Branding pastel: header blanco, chart areas blancas, STATUS_PASTEL",
+                "v4.3-test â€” Resumen Financiero: tabla QUERY SUM(L)/AVG(L) por estatus",
+                "v4.3-test â€” 100% exact match (sin wildcards), renderKpiCard() helper reutilizable",
+                "v4.3-test â€” % crÃ­ticos sobre activas, paleta pastel en COLUMN/BAR"
+            ]
+        },
+        {
+            "id": "proj-014",
+            "name": "aev_email_generator",
+            "path": "C:\\Users\\msi\\central_command\\Projects\\aev_email_generator",
+            "type": "automation",
+            "status": "active (RAW priority enforced, LY integrity fix applied)",
+            "priority": "high",
+            "loader_compatible": true,
+            "ai_stack": [
+                "claude",
+                "gemini"
+            ],
+            "frameworks": [
+                "jinja2"
+            ],
+            "description": "Pipeline template-driven para generacion y despacho de correos corporativos HTML estandarizados AEV. 10 tipos de templates Jinja2 (saldo, dashboard, comparativa, meeting, etc.), 10 localidades, dispatch via outlook-mailer-hub SaldoAdapter. Corre el dia 4 de cada mes.",
+            "last_activity": "2026-05-08",
+            "related_projects": [
+                "proj-015",
+                "proj-001"
+            ],
+            "skills": [
+                {
+                    "name": "skill-aev-email-generator",
+                    "path": "C:\\Users\\msi\\central_command\\tools\\skills\\skill-aev-email-generator",
+                    "version": "1.0.0",
+                    "agents": [
+                        "claude",
+                        "gemini"
+                    ],
+                    "scope": "project",
+                    "last_updated": "2026-05-08",
+                    "status": "valid"
+                }
+            ],
+            "indicators": {
+                "has_requirements": true,
+                "has_tests": false,
+                "has_notebooks": false
+            }
+        },
+        {
+            "id": "proj-015",
+            "name": "ai_productivity_tracker",
+            "path": "C:\\Users\\msi\\central_command\\Projects\\ai_productivity_tracker",
+            "type": "automation",
+            "status": "active (RAW priority enforced, LY integrity fix applied)",
+            "priority": "high",
+            "ai_stack": [
+                "claude",
+                "gemini"
+            ],
+            "frameworks": [
+                "openpyxl",
+                "google-apps-script",
+                "appsheet"
+            ],
+            "description": "Productivity Tracker Solo-AI-Agile + Commercial Tracker MVP con AppSheet + GAS. 6 sprints completados, fase de validaciÃ³n de replicabilidad. Incluye fleet_fuel_ai y security_audit_suite. Vinculado a proj-014 (aev_email_generator) para correos de estatus. Email Service GAS (proj-001-sub-002) disponible para envÃ­o de reportes de piloto y seguimiento via web app.",
+            "last_activity": "2026-03-07",
+            "related_projects": [
+                "proj-014",
+                "proj-001"
+            ],
+            "indicators": {
+                "has_requirements": true,
+                "has_tests": false,
+                "has_notebooks": false
+            }
+        },
+        {
+            "id": "proj-016",
+            "name": "sales-metrics-collector",
+            "path": "C:\\Users\\msi\\central_command\\Projects\\sales-metrics-collector",
+            "type": "data-pipeline",
+            "status": "paused",
+            "priority": "low",
+            "ai_stack": [],
+            "frameworks": [
+                "pytest",
+                "black",
+                "ruff"
+            ],
+            "description": "Metrics collector CLI para PYSTACK-AI sales pipeline. Estructura limpia con pyproject.toml y tests.",
+            "last_activity": "2026-01-28",
+            "paused_reason": "Pendiente revisiÃ³n para determinar alcance y si se retoma.",
+            "indicators": {
+                "has_requirements": true,
+                "has_tests": true,
+                "has_notebooks": false
+            }
+        },
+        {
+            "id": "proj-017",
+            "name": "01_compras_etl",
+            "path": "%DRIVE%\\grupo_del_valle\\scripts python\\01_Compras",
+            "type": "data-pipeline",
+            "status": "archived",
+            "priority": "low",
+            "ai_stack": [
+                "claude"
+            ],
+            "frameworks": [
+                "pymupdf",
+                "pdfplumber",
+                "openpyxl",
+                "google-apps-script"
+            ],
+            "description": "Pipeline ETL hÃ­brido (Python + GAS) para procesamiento de Ã“rdenes de Compra PDF. ExtracciÃ³n, transformaciÃ³n, consolidaciÃ³n Excel y dashboards. MÃ³dulo de producciÃ³n con extensiÃ³n Chrome (procure_ai_extension).",
+            "last_activity": "2026-02-07",
+            "archived_date": "2026-02-18",
+            "archived_reason": "Archivado por usuario. Pendiente revisiÃ³n futura.",
+            "indicators": {
+                "has_requirements": false,
+                "has_tests": true,
+                "has_notebooks": false
+            }
+        },
+        {
+            "id": "proj-018",
+            "name": "face_image_classifier",
+            "path": null,
+            "type": "ml-training",
+            "status": "paused",
+            "priority": "medium",
+            "ai_stack": [],
+            "frameworks": [],
+            "description": "ClasificaciÃ³n automÃ¡tica de imÃ¡genes por reconocimiento facial. Agrupa fotos por persona detectada. Proyecto planeado, pendiente de implementaciÃ³n.",
+            "last_activity": null,
+            "indicators": {
+                "has_requirements": false,
+                "has_tests": false,
+                "has_notebooks": false
+            }
+        },
+        {
+            "id": "proj-019",
+            "name": "consolidado_servicios_aev",
+            "path": "C:\\Users\\msi\\central_command\\Projects\\consolidado_servicios_aev",
+            "type": "data-pipeline",
+            "status": "completed",
+            "priority": "high",
+            "ai_stack": [
+                "claude"
+            ],
+            "frameworks": [
+                "requests",
+                "google-api-python-client",
+                "loguru",
+                "rich",
+                "questionary"
+            ],
+            "description": "Pipeline CLI: descarga archivos desde API y sube a Google Drive con cuenta de servicio. Refactorizado de monolito (Grade C) a paquete modular (Grade A) con 27 tests, retry+backoff, validacion robusta.",
+            "last_activity": "2026-02-12",
+            "indicators": {
+                "has_requirements": true,
+                "has_tests": true,
+                "has_notebooks": false
+            },
+            "audit_status": "passed",
+            "audit_grade": "A",
+            "last_audit": "2026-02-12",
+            "refactored_from": "%DRIVE%\\grupo_del_valle\\scripts python\\por_organizar\\base_consolidado_ventas\\consolidado_servicios_aev.py"
+        },
+        {
+            "id": "proj-020",
+            "name": "antiguedad_saldos_reporte",
+            "path": "%HOME%\\OneDrive - Autotransportes Ejecutivos Del Valle S.A. de C.V\\ANTIGUEDAD DE SALDOS FEBRERO 2026.xlsx",
+            "type": "data-pipeline",
+            "status": "paused",
+            "priority": "high",
+            "ai_stack": [
+                "claude"
+            ],
+            "frameworks": [
+                "openpyxl"
+            ],
+            "description": "Reporte de AntigÃ¼edad de Saldos para facturaciÃ³n â€” hoja NUEVO MODELO con 651 clientes Ãºnicos del catÃ¡logo, fÃ³rmulas SUMIFS contra detalle (24,360 facturas). Buckets NIF C-16/IFRS 9: NO CREDITO, CORRIENTE, 1-15, 16-30, 31-60, 61-90, >90. Suma columna O (SALDO pendiente real). ValidaciÃ³n cruzada por bucket vs fuente de datos. Script generador: %HOME%\\rebuild_nuevo_modelo.py",
+            "last_activity": "2026-02-18",
+            "paused_reason": "En espera de visto bueno del Ã¡rea de facturaciÃ³n para validar cifras y aprobar formato final.",
+            "indicators": {
+                "has_requirements": false,
+                "has_tests": false,
+                "has_notebooks": false
+            },
+            "deliverables": [
+                "Hoja NUEVO MODELO con 651 clientes y SUMIFS en tiempo real",
+                "SecciÃ³n de validaciÃ³n cruzada (bucket por bucket vs detalle)",
+                "Columna CHECK por fila (exhaustividad de buckets)",
+                "Script rebuild_nuevo_modelo.py para regenerar"
+            ],
+            "pending_approval": "Visto bueno del Ã¡rea de facturaciÃ³n"
+        },
+        {
+            "id": "proj-021",
+            "name": "daily_ai_paper",
+            "path": null,
+            "type": "automation",
+            "status": "archived",
+            "priority": "low",
+            "description": "Generador de resumen diario de papers de IA.",
+            "archived_date": "2026-05-13",
+            "archived_reason": "Project does not exist on disk (Audit 2026-05-13)"
+        },
+        {
+            "id": "proj-022",
+            "name": "comercial",
+            "path": null,
+            "type": "automation",
+            "status": "archived",
+            "priority": "low",
+            "description": "MÃƒÂ³dulo de gestiÃƒÂ³n comercial y seguimiento.",
+            "archived_date": "2026-05-13",
+            "archived_reason": "Project does not exist on disk (Audit 2026-05-13)"
+        },
+        {
+            "id": "proj-023",
+            "name": "control-compras-aev",
+            "path": "C:\\Users\\msi\\central_command\\Projects\\control_compras_aev",
+            "type": "gas-automation",
+            "status": "active (RAW priority enforced, LY integrity fix applied)",
+            "priority": "medium",
+            "description": "Control de compras AEV vÃƒÂ­a GAS.",
+            "metadata": {
+                "financials": {
+                    "benchmark_role": "admin_assistant",
+                    "estimated_manual_hrs_month": 32,
+                    "actual_auto_hrs_month": 1,
+                    "agent_infra_cost_mxn": 800,
+                    "automation_setup_cost_mxn": 35000
+                }
+            }
+        },
+        {
+            "id": "proj-024",
+            "name": "resultados_gdv",
+            "path": "C:\\Users\\msi\\central_command\\Projects\\resultados_gdv",
+            "type": "data-pipeline",
+            "status": "active (RAW priority enforced, LY integrity fix applied)",
+            "priority": "high",
+            "description": "Pipeline de procesamiento de resultados del Grupo del Valle. Ruta canónica estabilizada 2026-05-11. Legacy (resultados-gdv) archivado en Projects/archived/resultados-gdv_legacy.",
+            "metadata": {
+                "financials": {
+                    "benchmark_role": "data_analyst_mid",
+                    "estimated_manual_hrs_month": 48,
+                    "actual_auto_hrs_month": 3,
+                    "agent_infra_cost_mxn": 2500,
+                    "automation_setup_cost_mxn": 150000
+                }
+            }
+        },
+        {
+            "id": "proj-025",
+            "name": "appsheet_automation",
+            "path": "C:\\Users\\msi\\central_command\\Projects\\appsheet_automation",
+            "type": "automation",
+            "status": "active (RAW priority enforced, LY integrity fix applied)",
+            "priority": "high",
+            "description": "Repositorio centralizado de scripts, capturas y configuraciones para la automatizaciÃ³n de AppSheet mediante Playwright e infraestructura hÃ­brida.",
+            "metadata": {
+                "financials": {
+                    "benchmark_role": "automation_eng_mid",
+                    "estimated_manual_hrs_month": 72,
+                    "actual_auto_hrs_month": 6,
+                    "agent_infra_cost_mxn": 4500,
+                    "automation_setup_cost_mxn": 220000
+                }
+            }
+        },
+        {
+            "id": "proj-026",
+            "name": "cc-launcher",
+            "path": "C:\\Users\\msi\\central_command\\Projects\\cc-launcher",
+            "type": "tooling",
+            "status": "active (RAW priority enforced, LY integrity fix applied)",
+            "priority": "medium",
+            "ai_stack": [
+                "claude",
+                "gemini"
+            ],
+            "frameworks": [
+                "vscode-extension-api",
+                "vsce"
+            ],
+            "description": "ExtensiÃ³n VSCode/Antigravity multipropÃ³sito para Central Command. Fase inicial: 2 botones en Status Bar para lanzar terminales CC Claude y CC Gemini. DiseÃ±ada para escalar con nuevos botones/comandos sin reescribir lÃ³gica.",
+            "last_activity": "2026-05-05",
+            "indicators": {
+                "has_requirements": false,
+                "has_tests": false,
+                "has_notebooks": false
+            },
+            "metadata": {
+                "estado_gerencial": "EN DESARROLLO",
+                "avance_actual": "0%",
+                "eta": "Por definir",
+                "ecosystem_group": "infraestructura_automatizacion",
+                "descripcion_clara": "ExtensiÃ³n VSCode/Antigravity que agrega botones de acceso rÃ¡pido a la barra de estado para los agentes de Central Command.",
+                "orchestration_prompt": "C:\\Users\\msi\\central_command\\Projects\\data\\prompts\\orchestrate_cc_launcher.md"
+            }
+        },
+        {
+            "id": "proj-027",
+            "name": "antigravity-env",
+            "path": "C:\\Users\\msi\\central_command\\Projects\\cc-launcher",
+            "type": "tooling",
+            "status": "active (RAW priority enforced, LY integrity fix applied)",
+            "priority": "medium",
+            "ai_stack": [
+                "claude",
+                "gemini"
+            ],
+            "frameworks": [
+                "vscode-extension-api",
+                "vsce"
+            ],
+            "description": "OptimizaciÃ³n continua del entorno de desarrollo Antigravity: auditorÃ­a y mejora de archivos de configuraciÃ³n (settings.json, keybindings.json, snippets, tasks) y construcciÃ³n de extensiones .vsix propias que complementan Claude Code, Gemini Code Assist y OpenCode.",
+            "last_activity": "2026-05-05",
+            "indicators": {
+                "has_requirements": false,
+                "has_tests": false,
+                "has_notebooks": false
+            },
+            "metadata": {
+                "estado_gerencial": "EN DESARROLLO",
+                "avance_actual": "55%",
+                "eta": "Continuo",
+                "ecosystem_group": "infraestructura_automatizacion",
+                "descripcion_clara": "Proyecto continuo. 4 frentes: A) settings.json, B) keybindings, C) extensiones .vsix propias, D) snippets y tasks.",
+                "orchestration_prompt": "C:\\Users\\msi\\central_command\\Projects\\data\\prompts\\orchestrate_antigravity_env.md",
+                "extensions_planned": [
+                    "cc-launcher",
+                    "cc-context-bar",
+                    "cc-task-runner",
+                    "cc-snippet-loader"
+                ],
+                "backlog": [
+                    {
+                        "id": "AG-001",
+                        "frente": "A",
+                        "item": "Auditar y limpiar settings.json",
+                        "priority": "HIGH",
+                        "status": "completed"
+                    },
+                    {
+                        "id": "AG-002",
+                        "frente": "B",
+                        "item": "Mapear y deduplicar keybindings Claude Code + Gemini",
+                        "priority": "HIGH",
+                        "status": "pending"
+                    },
+                    {
+                        "id": "AG-003",
+                        "frente": "C",
+                        "item": "cc-launcher .vsix (proj-026)",
+                        "priority": "HIGH",
+                        "status": "in-progress"
+                    },
+                    {
+                        "id": "AG-004",
+                        "frente": "C",
+                        "item": "cc-context-bar (proyecto activo en status bar)",
+                        "priority": "MEDIUM",
+                        "status": "pending"
+                    },
+                    {
+                        "id": "AG-005",
+                        "frente": "C",
+                        "item": "cc-task-runner (botones RON/tests/sync)",
+                        "priority": "MEDIUM",
+                        "status": "pending"
+                    },
+                    {
+                        "id": "AG-006",
+                        "frente": "D",
+                        "item": "Snippets patrones ETL/pandas",
+                        "priority": "MEDIUM",
+                        "status": "pending"
+                    },
+                    {
+                        "id": "AG-007",
+                        "frente": "D",
+                        "item": "Snippets prompts Central Command (SIP, contracts)",
+                        "priority": "LOW",
+                        "status": "pending"
+                    },
+                    {
+                        "id": "AG-008",
+                        "frente": "A",
+                        "item": "Workspace settings por stack Python/GAS/Node",
+                        "priority": "LOW",
+                        "status": "pending"
+                    },
+                    {
+                        "id": "AG-009",
+                        "frente": "C",
+                        "item": "cc-snippet-loader (snippets dinÃ¡micos por proyecto)",
+                        "priority": "LOW",
+                        "status": "pending"
+                    }
+                ]
+            }
+        },
+        {
+            "id": "proj-037",
+            "name": "perplexity_research",
+            "path": "C:\\Users\\msi\\central_command\\scripts\\perplexity_module",
+            "type": "automation (Core Engine)",
+            "status": "ACTIVE (v1.0 Stability Validated)",
+            "priority": "low",
+            "last_activity": "2026-05-15",
+            "skills": [
+                "research-web",
+                "structured-output"
+            ]
+        },
+        {
+            "id": "tool-001",
+            "name": "pw-pool",
+            "path": "C:\\Users\\msi\\central_command\\tools\\pw-pool",
+            "type": "tool",
+            "status": "active (RAW priority enforced, LY integrity fix applied)",
+            "priority": "medium",
+            "description": "Pool de 6 instancias Playwright con aislamiento de browser y locks anti-colisiÃ³n.",
+            "metadata": {
+                "ecosystem_group": "infraestructura_automatizacion"
+            }
+        },
+        {
+            "id": "tool-002",
+            "name": "modelfiles",
+            "path": "C:\\Users\\msi\\central_command\\tools\\modelfiles",
+            "type": "tool",
+            "status": "active (RAW priority enforced, LY integrity fix applied)",
+            "priority": "medium",
+            "description": "Configuraciones y archivos de modelos locales para Ollama y otros motores.",
+            "metadata": {
+                "ecosystem_group": "infraestructura_automatizacion"
+            }
+        },
+        {
+            "id": "tool-003",
+            "name": "playwright-maintenance",
+            "path": "C:\\Users\\msi\\central_command\\tools\\playwright-maintenance",
+            "type": "tool",
+            "status": "active (RAW priority enforced, LY integrity fix applied)",
+            "priority": "medium",
+            "description": "Scripts de mantenimiento y limpieza para el entorno de Playwright.",
+            "metadata": {
+                "ecosystem_group": "infraestructura_automatizacion"
+            }
+        },
+        {
+            "id": "tool-004",
+            "name": "central-command-skills",
+            "path": "C:\\Users\\msi\\central_command\\tools\\skills",
+            "type": "tool",
+            "status": "active (RAW priority enforced, LY integrity fix applied)",
+            "priority": "medium",
+            "description": "Repositorio de habilidades especializadas para agentes (Gemini CLI / Claude Code).",
+            "metadata": {
+                "ecosystem_group": "infraestructura_automatizacion"
+            }
+        }
+    ],
+    "statistics": {
+        "total_projects": 34,
+        "active": 21,
+        "paused": 6,
+        "completed": 1,
+        "archived": 6,
+        "by_status": {
+            "active": [
+                "proj-001",
+                "proj-002",
+                "proj-004",
+                "proj-005",
+                "proj-008",
+                "proj-011",
+                "proj-012",
+                "proj-014",
+                "proj-015",
+                "proj-001-gastos",
+                "proj-001-utilidad",
+                "proj-001-resultados",
+                "tool-001",
+                "tool-002",
+                "tool-003",
+                "tool-004",
+                "proj-023",
+                "proj-024",
+                "proj-025",
+                "proj-026",
+                "proj-027",
+                "proj-037"
+            ],
+            "paused": [
+                "proj-006",
+                "proj-007",
+                "proj-009",
+                "proj-016",
+                "proj-020",
+                "proj-018"
+            ],
+            "archived": [
+                "proj-003",
+                "proj-010",
+                "proj-013",
+                "proj-017",
+                "proj-021",
+                "proj-022"
+            ],
+            "completed": [
+                "proj-019"
+            ]
+        }
+    },
+    "notes": "Cleanup 2026-05-12: 9 path fixes aplicados. proj-003/010 (archived) path→null. proj-006 (paused, folder missing) path→null. proj-009 (path duplicado de proj-001) path→null. proj-016/019 migrados a paths locales en Projects/. proj-001-gastos/utilidad/resultados (entradas lógicas, sin folder) path→null."
+}
