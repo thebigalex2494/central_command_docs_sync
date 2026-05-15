@@ -1,6 +1,6 @@
 # ⚡ Local Model Interaction Standard (v1.0 SAt)
 
-> **SSoT**: Protocolo de delegación para modelos locales (DeepSeek Coder v2, Qwen 2.5) dentro de Central Command. Basado en el análisis de optimización de la migración `proj-001`.
+> **SSoT**: Delegation protocol for local models (DeepSeek Coder v2, Qwen 2.5) within Central Command. Based on the optimization analysis of the `proj-001` migration.
 
 ## 🧠 Philosophy: Cognitive Load Reduction
 

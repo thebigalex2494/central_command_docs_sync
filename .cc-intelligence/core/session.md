@@ -26,16 +26,16 @@ replaces:
 ### Audit Output Template
 
 ```markdown
-## AUDITORIA CC-SESSION
+## CC-SESSION AUDIT
 
-| Criterio | Calificacion | Observacion |
+| Criterion | Rating | Observation |
 |---|---|---|
-| Carga de Contexto | [A/B/C/F] | [Detalle tecnico] |
-| Flujo de Trabajo | [A/B/C/F] | [Cumplimiento de 6 fases] |
-| Integridad de Datos | [A/B/C/F] | [Validacion de archivos/registros] |
+| Context Load | [A/B/C/F] | [Technical detail] |
+| Workflow Flow | [A/B/C/F] | [6-phase compliance] |
+| Data Integrity | [A/B/C/F] | [File/registry validation] |
 
-**Evaluacion de Efectividad:** [Breve parrafo sobre eficiencia de tokens y precision].
-**Recomendacion de Ajuste:** [Accion concreta para mejorar la siguiente fase].
+**Effectiveness Evaluation:** [Brief paragraph on token efficiency and precision].
+**Adjustment Recommendation:** [Concrete action to improve the next phase].
 ```
 
 ## B) Post-Session Report (invoke at END or `/session-report`)
@@ -59,7 +59,7 @@ find . -newer /tmp/session_start_marker -name "*.py" -o -name "*.md" 2>/dev/null
 - **Code**: .py, .js, .ts, .ps1
 - **Config**: .json, .yaml, .toml, .env
 - **Docs**: .md, README, AGENTS.md
-- **Data**: .csv, .xlsx, registros
+- **Data**: .csv, .xlsx, records
 
 ### Step 4: Generate Report
 
@@ -68,30 +68,30 @@ Save to `artifacts/session_reports/SESSION_{YYYY-MM-DD}_{HH-MM}.md`:
 ```markdown
 # Session Report — {YYYY-MM-DD HH:MM}
 
-## Resumen
-{1-3 oraciones describiendo objetivo principal y resultado}
+## Summary
+{1-3 sentences describing main objective and outcome}
 
-## Cambios Realizados
+## Changes Performed
 
-### Codigo
-- `archivo.py` — descripcion del cambio
+### Code
+- `file.py` — change description
 
-### Configuracion
-- `config.json` — descripcion del cambio
+### Configuration
+- `config.json` — change description
 
-### Documentacion
-- `README.md` — descripcion del cambio
+### Documentation
+- `README.md` — change description
 
-## Decisiones Tomadas
-1. {Decision} — {Justificacion breve}
+## Decisions Taken
+1. {Decision} — {Brief justification}
 
-## Pendientes / TODOs
-- [ ] {Pendiente 1}
+## Pending / TODOs
+- [ ] {Pending 1}
 
-## Metricas
-- Archivos modificados: N
-- Archivos creados: N
-- Lineas anadidas/eliminadas: +N / -N
+## Metrics
+- Files modified: N
+- Files created: N
+- Lines added/deleted: +N / -N
 ```
 
 ### Step 5: Log to DuckDB (Observability)
@@ -100,8 +100,8 @@ Save to `artifacts/session_reports/SESSION_{YYYY-MM-DD}_{HH-MM}.md`:
 # Execute after generating report
 python %CC%\tools\duckbase_logger.py
 # Or direct insert into data/observability.duckdb:
-# Tables: session_history (session_id, project_id, resumen, resultado)
+# Tables: session_history (session_id, project_id, summary, result)
 #         agent_performance (metrics estimated for the session)
 ```
 
-Comunicar siempre en **Espanol (MX)**.
+Always communicate in **Spanish (MX)** with the user.

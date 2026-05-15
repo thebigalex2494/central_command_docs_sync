@@ -1,6 +1,6 @@
 # Skill: BrowserAgent MCP
 
-Esta skill otorga a Gemini CLI la capacidad de realizar navegación web avanzada, interacción con aplicaciones (AppSheet) y extracción de datos de sitios externos (Perplexity, DeepSeek) utilizando un agente especializado con persistencia de sesión.
+This skill grants Gemini CLI the ability to perform advanced web navigation, interact with applications (AppSheet), and extract data from external sites (Perplexity, DeepSeek) using a specialized agent with session persistence.
 
 ## Identity
 
@@ -9,36 +9,36 @@ Esta skill otorga a Gemini CLI la capacidad de realizar navegación web avanzada
 - **Status**: EXPERIMENTAL (Tier 4)
 - **Capability**: Google Auth Persistence via `pw-pool`
 
-## Instrucciones de Operación
+## Operating Instructions
 
-### 1. Selección de Modo
-- **Modo Automatizado (Headless)**: Usar para tareas de extracción rutinarias donde ya existe una sesión activa.
-- **Modo Login/Mantenimiento (Headed)**: Usar obligatoriamente cuando se necesite iniciar sesión manualmente o resolver captchas.
+### 1. Mode Selection
+- **Automated Mode (Headless)**: Use for routine extraction tasks where an active session already exists.
+- **Login/Maintenance Mode (Headed)**: Mandatory when manual login or captcha solving is required.
 
-### 2. Gestión de Sesión (pw-pool)
-La skill utiliza automáticamente el pool de Playwright. 
-- Si no hay instancias libres, espera o solicita al usuario ejecutar `bash tools/pw-pool/pw-lock.sh cleanup`.
-- Al finalizar, el lock se libera automáticamente.
+### 2. Session Management (pw-pool)
+The skill automatically uses the Playwright pool.
+- If no free instances are available, it waits or asks the user to run `bash tools/pw-pool/pw-lock.sh cleanup`.
+- Upon completion, the lock is automatically released.
 
-## Comandos Disponibles
+## Available Commands
 
-### Ejecución Estándar (Invisible)
+### Standard Execution (Hidden)
 ```bash
-python %CC%\tools\browser_agent_playwright_mcp.py "<objetivo>"
+python %CC%\tools\browser_agent_playwright_mcp.py "<objective>"
 ```
 
-### Ejecución de Mantenimiento (Visible para Login)
-Para forzar el modo visible, se debe pasar el parámetro interno a la herramienta o usar este comando CLI:
+### Maintenance Execution (Visible for Login)
+To force visible mode, pass the internal parameter to the tool or use this CLI command:
 ```bash
-# Nota: Requiere que el script detecte la intención o se use el parámetro headless=False si se llama vía MCP
-python %CC%\tools\browser_agent_playwright_mcp.py "Navega a <url> en modo visible para login"
+# Note: Requires the script to detect intent or use the headless=False parameter if called via MCP
+python %CC%\tools\browser_agent_playwright_mcp.py "Navigate to <url> in visible mode for login"
 ```
 
-## Configuración Requerida
-- `ANTHROPIC_API_KEY`: Clave para el agente de razonamiento.
-- `BROWSER_AGENT_ALLOW_AI_DOMAINS`: Debe ser `true` para pruebas con Perplexity/DeepSeek.
+## Required Configuration
+- `ANTHROPIC_API_KEY`: Key for the reasoning agent.
+- `BROWSER_AGENT_ALLOW_AI_DOMAINS`: Must be `true` for testing with Perplexity/DeepSeek.
 
-## Reglas de Seguridad
-1. **No Loops**: El agente tiene un límite de 10 iteraciones por tarea.
-2. **Dominio Restringido**: Bloqueo por defecto de dominios de IA para evitar recursión infinita, bypass controlado por variable de entorno.
-3. **Privacidad**: Las sesiones se guardan localmente en `tools/pw-pool/sessions/`.
+## Security Rules
+1. **No Loops**: The agent has a limit of 10 iterations per task.
+2. **Restricted Domain**: Default blocking of AI domains to avoid infinite recursion, controlled bypass via environment variable.
+3. **Privacy**: Sessions are saved locally in `tools/pw-pool/sessions/`.
