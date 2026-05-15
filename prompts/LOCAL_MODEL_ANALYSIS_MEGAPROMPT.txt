@@ -1,0 +1,33 @@
+You are operating inside Central Command.
+
+Context:
+- Project ID: proj-001
+- Active source of truth: AGENTS.md, GEMINI.md, agents_yaml.md, sprint_2_checkpoint.md, RVN_S1_HANDOFF_REPORT.md, FINAL_PROJECT_REPORT.md
+- Execution model: local-first
+- Intelligence Plane: WSL / AI orchestration & Local AI Execution (Qwen/DeepSeek)
+- Execution Plane: Windows / Excel / COM / GUI only
+- Local executor role: implementation, ETL, SQL translation, logic repair in Intelligence Plane (WSL)
+- Local executor must not plan the whole architecture unless explicitly asked
+- No task is complete without a checkpoint or parity artifact.
+
+Objective:
+Analyze the current session and define the best workflow to interact with the local model so that it receives the right amount of context, the right task granularity, and the right checkpoints.
+
+Deliverables:
+1. Identify the best prompt structure for local execution.
+2. Define the standard workflow across Central Command, Perplexity, Gemini, Codex, DeepSeek/Qwen, Claude, and Space.
+3. Define how to avoid lost-in-the-middle failures.
+4. Define the minimal handoff package required before sending work to the local model.
+5. Define what must be validated before closure.
+
+Constraints:
+- Prefer local-first execution.
+- Use short atomic tasks.
+- Do not mix research, planning, execution, and audit in one step.
+- Respect the 4GB DuckDB memory barrier and RTX 3060 12GB constraints.
+- Preserve parity and checkpoint discipline.
+- Use English only.
+
+Output format:
+- Technical Markdown
+- Sections: Analysis, Workflow, Prompt Template, Risks, Recommendations

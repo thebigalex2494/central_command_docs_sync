@@ -1,0 +1,74 @@
+# 🛰 CC Workflow, PlantUML & MCP Master Mega-Prompt (v1.0 SAt)
+> **Master tool for workflow validation and experimental integration auditing**
+
+## 📝 MASTER MEGAPROMPT (English)
+```text
+You are operating inside Central Command.
+
+Mission:
+Create a master Mega-Prompt that standardizes Central Command development workflow validation, PlantUML workflow documentation, and experimental integration planning for Perplexity via MCP. The output must be optimized for future reuse by local agents and for later comparison against current external best practices by the orchestrator.
+
+Language rules:
+- All inter-agent communication, prompts, documentation, and outputs must be in English.
+- Use concise technical English.
+- Keep the structure low-context and caveman-mode friendly.
+
+Primary objectives:
+1. Validate the canonical Central Command development workflow using the current source-of-truth documents.
+2. Determine whether the workflow is already represented in PlantUML.
+3. If PlantUML exists, report its exact location and status.
+4. If PlantUML does not exist, produce a minimal PlantUML skeleton ready to complete.
+5. Create a reusable Mega-Prompt that can be used by future local agents to validate the workflow consistently.
+6. Review the feasibility of integrating Perplexity Spaces via MCP for experimental research workflows.
+7. Recommend the best method for this integration using current resources, distinguishing between official MCP support and experimental browser-automation approaches.
+
+Source of truth:
+- AGENTS.md | GEMINI.md | LOCAL_MODEL_INTERACTION_STANDARD.md
+- SOP_OPERATOR_CARD_V1.md | LOCAL_MODEL_ANALYSIS_MEGAPROMPT.txt
+- Current project artifacts and checkpoints in the workspace
+
+Reference target:
+- Perplexity Space: https://www.perplexity.ai/spaces/central-command-5dPMu7AZQce2Huzerr225A
+
+Core rules:
+- Local-first. One task per prompt. One context scope. One measurable validation.
+- No blended research / planning / execution / audit.
+- No task is complete without a checkpoint, parity report, or handoff artifact.
+- Intelligence Plane = WSL. Execution Plane = Windows only for native GUI / COM / Excel tasks.
+- All unsupported statements must be marked [Inferred].
+- All missing sources must be marked [Not found].
+
+Task A: Workflow validation
+- Analyze source-of-truth documents and extract the canonical CC development workflow.
+- Map each phase to a single owner, plane, required artifact, and validation gate.
+- List anti-patterns to avoid.
+
+Task B: PlantUML check
+- Search workspace artifacts for existing PlantUML diagrams of the workflow.
+- Report status (exists / partial / not found) and provide a skeleton if missing.
+
+Task C: Perplexity MCP feasibility
+- Determine the most practical method for connecting CC workflows to Perplexity (Official vs Experimental).
+- Recommend the safest and most maintainable approach for Space: central-command-5dPMu7AZQce2Huzerr225A.
+
+Deliverables:
+1. Executive result | 2. Canonical workflow table | 3. PlantUML status | 4. Perplexity MCP feasibility review | 5. Minimal PlantUML skeleton | 6. External comparison notes | 7. Validation findings | 8. Risks / conflicts | 9. Recommended canonical rule | 10. Master Mega-Prompt template.
+
+Validation:
+- Every claim must be grounded or marked [Inferred].
+- Missing sources marked [Not found].
+- Perplexity integration must distinguish official vs experimental methods.
+```
+
+---
+
+## ⚡ COMPACT VERSION
+```text
+Create a master Mega-Prompt in English for Central Command.
+Validate: canonical dev workflow | PlantUML existence | Perplexity Space MCP feasibility.
+Rules: local-first | atomic | WSL-Intelligence | All unsupported claims marked [Inferred].
+Output: workflow table | PlantUML status | Perplexity MCP review | reusable prompt template.
+```
+
+---
+*Authorized by Central Command Intelligence Unit — 2026-05-15*
