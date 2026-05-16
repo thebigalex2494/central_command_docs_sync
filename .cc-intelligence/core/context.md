@@ -15,7 +15,7 @@ replaces:
 
 ## 1. Identity & Path Convention
 
-- **%CC%**: %CC% — PRIMARY WORKSPACE. All execution here.
+- **%CC%**: C:\Users\msi\central_command — PRIMARY WORKSPACE. All execution here.
 - **%DRIVE%**: I:\Mi unidad\central_command — REFERENCE ONLY. Stable Google Drive mirror.
 - **WSL Path**: /mnt/c/Users/msi/central_command
 
@@ -69,13 +69,13 @@ $hostname = $env:COMPUTERNAME
 
 ```powershell
 # Inline task delegation to Gemini CLI
-python %CC%\tools\session-bridge\gemini_dispatch.py --task "task description"
+python C:\Users\msi\central_command\tools\session-bridge\gemini_dispatch.py --task "task description"
 
 # Task from file (complex tasks)
-python %CC%\tools\session-bridge\gemini_dispatch.py --task-file %CC%\tasks\my_task.md
+python C:\Users\msi\central_command\tools\session-bridge\gemini_dispatch.py --task-file C:\Users\msi\central_command\tasks\my_task.md
 
 # Restore last remote session (post-SSH workflow)
-python %CC%\tools\session-bridge\session_bridge.py --load gemini latest --output md
+python C:\Users\msi\central_command\tools\session-bridge\session_bridge.py --load gemini latest --output md
 ```
 
 ## 8. Skill Loading Protocol (v3.0)

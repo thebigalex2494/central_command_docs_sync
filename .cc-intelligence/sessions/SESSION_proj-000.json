@@ -1,0 +1,1445 @@
+{
+  "schema_version": "1.0",
+  "handoff_id": "hof-20260515-174844",
+  "source_agent": "antigravity",
+  "source_plane": "windows",
+  "target_agent": "gemini-cli",
+  "created_at": "2026-05-15T17:48:44.020755",
+  "active_context": {
+    "project_id": "proj-000",
+    "project_name": "Central Command Core",
+    "sip_phase": "EXECUTE",
+    "action_plan_ref": "C:\\Users\\msi\\central_command\\artifacts\\PLAN_proj-000.md",
+    "current_task": {
+      "task_id": "T-XX",
+      "description": "See action plan",
+      "status": "in_progress"
+    }
+  },
+  "dirty_files": [
+    {
+      "path": ".agents/skills/source-command-context/SKILL.md",
+      "plane": "windows",
+      "git_status": "modified"
+    },
+    {
+      "path": ".agents/skills/source-command-project-sweep/SKILL.md",
+      "plane": "windows",
+      "git_status": "modified"
+    },
+    {
+      "path": ".agents/skills/source-command-session-report/SKILL.md",
+      "plane": "windows",
+      "git_status": "modified"
+    },
+    {
+      "path": ".agents/skills/source-command-status/SKILL.md",
+      "plane": "windows",
+      "git_status": "modified"
+    },
+    {
+      "path": ".cc-intelligence/commands/status.md",
+      "plane": "windows",
+      "git_status": "modified"
+    },
+    {
+      "path": ".cc-intelligence/commands/sweep.md",
+      "plane": "windows",
+      "git_status": "modified"
+    },
+    {
+      "path": ".cc-intelligence/core/context.md",
+      "plane": "windows",
+      "git_status": "modified"
+    },
+    {
+      "path": ".cc-intelligence/core/session.md",
+      "plane": "windows",
+      "git_status": "modified"
+    },
+    {
+      "path": ".cc-intelligence/domain/file-classification.md",
+      "plane": "windows",
+      "git_status": "modified"
+    },
+    {
+      "path": ".cc-intelligence/domain/project-architect.md",
+      "plane": "windows",
+      "git_status": "modified"
+    },
+    {
+      "path": ".cc-intelligence/domain/project-registry.md",
+      "plane": "windows",
+      "git_status": "modified"
+    },
+    {
+      "path": ".cc-intelligence/domain/prompt-refinement.md",
+      "plane": "windows",
+      "git_status": "modified"
+    },
+    {
+      "path": ".cc-intelligence/domain/script-templates.md",
+      "plane": "windows",
+      "git_status": "modified"
+    },
+    {
+      "path": ".cc-intelligence/projects/ron-processor.md",
+      "plane": "windows",
+      "git_status": "modified"
+    },
+    {
+      "path": ".cc-intelligence/tools/browser-agent.md",
+      "plane": "windows",
+      "git_status": "modified"
+    },
+    {
+      "path": ".central-agent/.claude-plugin/plugin.json",
+      "plane": "windows",
+      "git_status": "modified"
+    },
+    {
+      "path": ".central-agent/AGENTS.md",
+      "plane": "windows",
+      "git_status": "modified"
+    },
+    {
+      "path": ".central-agent/ARCHITECTURE_DIAGRAM.md",
+      "plane": "windows",
+      "git_status": "modified"
+    },
+    {
+      "path": ".central-agent/EXECUTION_QUICKSTART.md",
+      "plane": "windows",
+      "git_status": "modified"
+    },
+    {
+      "path": ".central-agent/FINAL_SUMMARY.txt",
+      "plane": "windows",
+      "git_status": "modified"
+    },
+    {
+      "path": ".central-agent/OPENCODE_INTEGRATION_DECISION.md",
+      "plane": "windows",
+      "git_status": "modified"
+    },
+    {
+      "path": ".central-agent/ORCHESTRATION_REFINED_V4.md",
+      "plane": "windows",
+      "git_status": "modified"
+    },
+    {
+      "path": ".central-agent/PLAN_SUMMARY_20260429.md",
+      "plane": "windows",
+      "git_status": "modified"
+    },
+    {
+      "path": ".central-agent/README_ORCHESTRATION.md",
+      "plane": "windows",
+      "git_status": "modified"
+    },
+    {
+      "path": ".central-agent/agents/file-monitor.md",
+      "plane": "windows",
+      "git_status": "modified"
+    },
+    {
+      "path": ".central-agent/agents/gemini-coordinator.md",
+      "plane": "windows",
+      "git_status": "modified"
+    },
+    {
+      "path": ".central-agent/agents/ollama-master-orchestrator.md",
+      "plane": "windows",
+      "git_status": "modified"
+    },
+    {
+      "path": ".central-agent/agents/opencode-model-auditor.md",
+      "plane": "windows",
+      "git_status": "modified"
+    },
+    {
+      "path": ".central-agent/agents/opencode-repo-executor.md",
+      "plane": "windows",
+      "git_status": "modified"
+    },
+    {
+      "path": ".central-agent/agents/project-tracker.md",
+      "plane": "windows",
+      "git_status": "modified"
+    },
+    {
+      "path": ".central-agent/agents/script-generator.md",
+      "plane": "windows",
+      "git_status": "modified"
+    },
+    {
+      "path": ".central-agent/commands/classify.md",
+      "plane": "windows",
+      "git_status": "modified"
+    },
+    {
+      "path": ".central-agent/commands/generate-ps.md",
+      "plane": "windows",
+      "git_status": "modified"
+    },
+    {
+      "path": ".central-agent/commands/project.md",
+      "plane": "windows",
+      "git_status": "modified"
+    },
+    {
+      "path": ".central-agent/commands/projects.md",
+      "plane": "windows",
+      "git_status": "modified"
+    },
+    {
+      "path": ".central-agent/commands/scan.md",
+      "plane": "windows",
+      "git_status": "modified"
+    },
+    {
+      "path": ".central-agent/commands/status.md",
+      "plane": "windows",
+      "git_status": "modified"
+    },
+    {
+      "path": ".central-agent/config/ai-indicators.json",
+      "plane": "windows",
+      "git_status": "modified"
+    },
+    {
+      "path": ".central-agent/config/directories.json",
+      "plane": "windows",
+      "git_status": "modified"
+    },
+    {
+      "path": ".central-agent/config/taxonomy.json",
+      "plane": "windows",
+      "git_status": "modified"
+    },
+    {
+      "path": ".central-agent/docs/agents.md",
+      "plane": "windows",
+      "git_status": "modified"
+    },
+    {
+      "path": ".central-agent/docs/files.md",
+      "plane": "windows",
+      "git_status": "modified"
+    },
+    {
+      "path": ".central-agent/docs/projects.md",
+      "plane": "windows",
+      "git_status": "modified"
+    },
+    {
+      "path": ".central-agent/docs/sat_v2_evolution_report.md",
+      "plane": "windows",
+      "git_status": "modified"
+    },
+    {
+      "path": ".central-agent/docs/sat_v2_remediation_report.md",
+      "plane": "windows",
+      "git_status": "modified"
+    },
+    {
+      "path": ".central-agent/docs/system.md",
+      "plane": "windows",
+      "git_status": "modified"
+    },
+    {
+      "path": ".central-agent/docs/templates/claude_prompt_framework.md",
+      "plane": "windows",
+      "git_status": "modified"
+    },
+    {
+      "path": ".central-agent/docs/templates/mega_prompt_coursera.txt",
+      "plane": "windows",
+      "git_status": "modified"
+    },
+    {
+      "path": ".central-agent/docs/templates/multi_agent_coordination.md",
+      "plane": "windows",
+      "git_status": "modified"
+    },
+    {
+      "path": ".central-agent/docs/templates/powershell.md",
+      "plane": "windows",
+      "git_status": "modified"
+    },
+    {
+      "path": ".central-agent/handoffs/ORCHESTRATION-BRIEFING.md",
+      "plane": "windows",
+      "git_status": "modified"
+    },
+    {
+      "path": ".central-agent/handoffs/README.md",
+      "plane": "windows",
+      "git_status": "modified"
+    },
+    {
+      "path": ".central-agent/handoffs/agent-routing-map.json",
+      "plane": "windows",
+      "git_status": "modified"
+    },
+    {
+      "path": ".central-agent/handoffs/gemini-delegation-instructions.md",
+      "plane": "windows",
+      "git_status": "modified"
+    },
+    {
+      "path": ".central-agent/handoffs/phase-2-3-delegation-payload.json",
+      "plane": "windows",
+      "git_status": "modified"
+    },
+    {
+      "path": ".central-agent/hooks/hooks.json",
+      "plane": "windows",
+      "git_status": "modified"
+    },
+    {
+      "path": ".central-agent/skills/file-classification/SKILL.md",
+      "plane": "windows",
+      "git_status": "modified"
+    },
+    {
+      "path": ".central-agent/skills/project-architect/SKILL.md",
+      "plane": "windows",
+      "git_status": "modified"
+    },
+    {
+      "path": ".central-agent/skills/project-registry/SKILL.md",
+      "plane": "windows",
+      "git_status": "modified"
+    },
+    {
+      "path": ".central-agent/skills/prompt-refinement/SKILL.md",
+      "plane": "windows",
+      "git_status": "modified"
+    },
+    {
+      "path": ".central-agent/skills/script-templates/SKILL.md",
+      "plane": "windows",
+      "git_status": "modified"
+    },
+    {
+      "path": ".claude/rules/orchestration-protocol.md",
+      "plane": "windows",
+      "git_status": "modified"
+    },
+    {
+      "path": ".device-profiles.json",
+      "plane": "windows",
+      "git_status": "modified"
+    },
+    {
+      "path": ".gitignore",
+      "plane": "windows",
+      "git_status": "modified"
+    },
+    {
+      "path": ".openspace/repo",
+      "plane": "windows",
+      "git_status": "untracked"
+    },
+    {
+      "path": "AGENTS.md",
+      "plane": "windows",
+      "git_status": "modified"
+    },
+    {
+      "path": "CLAUDE.md",
+      "plane": "windows",
+      "git_status": "modified"
+    },
+    {
+      "path": "CODEX_PROJECT_CONTEXT.md",
+      "plane": "windows",
+      "git_status": "untracked"
+    },
+    {
+      "path": "CODEX_PROJECT_CONTEXT_PLAN.md",
+      "plane": "windows",
+      "git_status": "untracked"
+    },
+    {
+      "path": "GEMINI.md",
+      "plane": "windows",
+      "git_status": "modified"
+    },
+    {
+      "path": "PROJECT_CONTEXT.md",
+      "plane": "windows",
+      "git_status": "modified"
+    },
+    {
+      "path": "Projects/outlook-mailer-hub/ACTION_PLAN_PROJ_002.md",
+      "plane": "windows",
+      "git_status": "untracked"
+    },
+    {
+      "path": "Projects/outlook-mailer-hub/LICENSE",
+      "plane": "windows",
+      "git_status": "untracked"
+    },
+    {
+      "path": "Projects/outlook-mailer-hub/README.md",
+      "plane": "windows",
+      "git_status": "untracked"
+    },
+    {
+      "path": "Projects/outlook-mailer-hub/SELF_SERVICE_GUIDE.md",
+      "plane": "windows",
+      "git_status": "untracked"
+    },
+    {
+      "path": "Projects/outlook-mailer-hub/SKILL_OUTLOOK_HUB.md",
+      "plane": "windows",
+      "git_status": "untracked"
+    },
+    {
+      "path": "Projects/outlook-mailer-hub/adapters/__init__.py",
+      "plane": "windows",
+      "git_status": "untracked"
+    },
+    {
+      "path": "Projects/outlook-mailer-hub/adapters/aev_adapter.py",
+      "plane": "windows",
+      "git_status": "untracked"
+    },
+    {
+      "path": "Projects/outlook-mailer-hub/adapters/base.py",
+      "plane": "windows",
+      "git_status": "untracked"
+    },
+    {
+      "path": "Projects/outlook-mailer-hub/adapters/rvn_adapter.py",
+      "plane": "windows",
+      "git_status": "untracked"
+    },
+    {
+      "path": "Projects/outlook-mailer-hub/adapters/saldo_adapter.py",
+      "plane": "windows",
+      "git_status": "untracked"
+    },
+    {
+      "path": "Projects/outlook-mailer-hub/assets/logos/.gitkeep",
+      "plane": "windows",
+      "git_status": "untracked"
+    },
+    {
+      "path": "Projects/outlook-mailer-hub/pyproject.toml",
+      "plane": "windows",
+      "git_status": "untracked"
+    },
+    {
+      "path": "Projects/outlook-mailer-hub/tests/conftest.py",
+      "plane": "windows",
+      "git_status": "untracked"
+    },
+    {
+      "path": "Projects/outlook-mailer-hub/tests/test_adapters.py",
+      "plane": "windows",
+      "git_status": "untracked"
+    },
+    {
+      "path": "Projects/outlook-mailer-hub/tests/test_saldo_adapter.py",
+      "plane": "windows",
+      "git_status": "untracked"
+    },
+    {
+      "path": "README.md",
+      "plane": "windows",
+      "git_status": "modified"
+    },
+    {
+      "path": "SESSION_STATUS.md",
+      "plane": "windows",
+      "git_status": "modified"
+    },
+    {
+      "path": "artifacts/agent_reports/audit_results_20260503.md",
+      "plane": "windows",
+      "git_status": "modified"
+    },
+    {
+      "path": "artifacts/backup_prep/choco_packages.txt",
+      "plane": "windows",
+      "git_status": "modified"
+    },
+    {
+      "path": "artifacts/backup_prep/drivers_inventory.txt",
+      "plane": "windows",
+      "git_status": "modified"
+    },
+    {
+      "path": "artifacts/backup_prep/env_sensitive_names.txt",
+      "plane": "windows",
+      "git_status": "modified"
+    },
+    {
+      "path": "artifacts/backup_prep/installed_software_winget.txt",
+      "plane": "windows",
+      "git_status": "modified"
+    },
+    {
+      "path": "artifacts/backup_prep/npm_global.txt",
+      "plane": "windows",
+      "git_status": "modified"
+    },
+    {
+      "path": "artifacts/backup_prep/path_entries.txt",
+      "plane": "windows",
+      "git_status": "modified"
+    },
+    {
+      "path": "artifacts/backup_prep/pip_global.txt",
+      "plane": "windows",
+      "git_status": "modified"
+    },
+    {
+      "path": "artifacts/backup_prep/vscode_extensions.txt",
+      "plane": "windows",
+      "git_status": "modified"
+    },
+    {
+      "path": "artifacts/backup_prep/wifi_profiles.txt",
+      "plane": "windows",
+      "git_status": "modified"
+    },
+    {
+      "path": "artifacts/backup_prep/windows_product_key.txt",
+      "plane": "windows",
+      "git_status": "modified"
+    },
+    {
+      "path": "config/dotfiles/.clasprc.json",
+      "plane": "windows",
+      "git_status": "modified"
+    },
+    {
+      "path": "config/dotfiles/.claude.json",
+      "plane": "windows",
+      "git_status": "modified"
+    },
+    {
+      "path": "config/powershell/setup-bd-aliases.ps1",
+      "plane": "windows",
+      "git_status": "modified"
+    },
+    {
+      "path": "config/skills/central-command-dev.md",
+      "plane": "windows",
+      "git_status": "modified"
+    },
+    {
+      "path": "config/skills/central-command.md",
+      "plane": "windows",
+      "git_status": "modified"
+    },
+    {
+      "path": "config/skills/project-architect.md",
+      "plane": "windows",
+      "git_status": "modified"
+    },
+    {
+      "path": "config/skills/prompt-refinement.md",
+      "plane": "windows",
+      "git_status": "modified"
+    },
+    {
+      "path": "config/skills/system-recycler.md",
+      "plane": "windows",
+      "git_status": "untracked"
+    },
+    {
+      "path": "config/sql_patterns.json",
+      "plane": "windows",
+      "git_status": "modified"
+    },
+    {
+      "path": "data/.device-profiles.json",
+      "plane": "windows",
+      "git_status": "untracked"
+    },
+    {
+      "path": "data/projects-registry.json",
+      "plane": "windows",
+      "git_status": "modified"
+    },
+    {
+      "path": "docs/ARCHITECTURE.md",
+      "plane": "windows",
+      "git_status": "modified"
+    },
+    {
+      "path": "docs/RESUMEN_EJECUTIVO_ARQUITECTURA.md",
+      "plane": "windows",
+      "git_status": "untracked"
+    },
+    {
+      "path": "extract_operators.py",
+      "plane": "windows",
+      "git_status": "untracked"
+    },
+    {
+      "path": "extract_operators_v2.py",
+      "plane": "windows",
+      "git_status": "untracked"
+    },
+    {
+      "path": "operators_array.txt",
+      "plane": "windows",
+      "git_status": "untracked"
+    },
+    {
+      "path": "operators_array_v2.txt",
+      "plane": "windows",
+      "git_status": "untracked"
+    },
+    {
+      "path": "scripts/central_command/local_router/agents.yaml",
+      "plane": "windows",
+      "git_status": "modified"
+    },
+    {
+      "path": "scripts/central_command/paths.py",
+      "plane": "windows",
+      "git_status": "modified"
+    },
+    {
+      "path": "scripts/central_command/tests~HEAD",
+      "plane": "windows",
+      "git_status": "untracked"
+    },
+    {
+      "path": "scripts/perplexity_module/config.py",
+      "plane": "windows",
+      "git_status": "modified"
+    },
+    {
+      "path": "scripts/perplexity_module/perplexity_client.py",
+      "plane": "windows",
+      "git_status": "modified"
+    },
+    {
+      "path": "scripts/perplexity_module/research_cli.py",
+      "plane": "windows",
+      "git_status": "modified"
+    },
+    {
+      "path": "tools/bd-claude.sh",
+      "plane": "windows",
+      "git_status": "modified"
+    },
+    {
+      "path": "tools/bd-copilot.sh",
+      "plane": "windows",
+      "git_status": "modified"
+    },
+    {
+      "path": "tools/bd-gemini.sh",
+      "plane": "windows",
+      "git_status": "modified"
+    },
+    {
+      "path": "tools/browser_agent_playwright_mcp.py",
+      "plane": "windows",
+      "git_status": "modified"
+    },
+    {
+      "path": "tools/cc.ps1",
+      "plane": "windows",
+      "git_status": "modified"
+    },
+    {
+      "path": "tools/outlook_security.py",
+      "plane": "windows",
+      "git_status": "modified"
+    },
+    {
+      "path": "tools/outlook_sender.py",
+      "plane": "windows",
+      "git_status": "modified"
+    },
+    {
+      "path": "tools/setup-bd-aliases.ps1",
+      "plane": "windows",
+      "git_status": "modified"
+    },
+    {
+      "path": "tools/skills/central-command-orchestrator/SKILL.md",
+      "plane": "windows",
+      "git_status": "modified"
+    },
+    {
+      "path": "update_gs_operators.py",
+      "plane": "windows",
+      "git_status": "untracked"
+    },
+    {
+      "path": ".cc-intelligence/commands/handoff.md",
+      "plane": "windows",
+      "git_status": "untracked"
+    },
+    {
+      "path": ".cc-intelligence/commands/remote-central_command.md",
+      "plane": "windows",
+      "git_status": "untracked"
+    },
+    {
+      "path": ".cc-intelligence/domain/duckdb-etl-pattern.md",
+      "plane": "windows",
+      "git_status": "untracked"
+    },
+    {
+      "path": ".cc-intelligence/domain/financial-glossary.md",
+      "plane": "windows",
+      "git_status": "untracked"
+    },
+    {
+      "path": ".cc-intelligence/domain/visual-reporting.md",
+      "plane": "windows",
+      "git_status": "untracked"
+    },
+    {
+      "path": ".cc-intelligence/prompts/",
+      "plane": "windows",
+      "git_status": "untracked"
+    },
+    {
+      "path": ".cc-intelligence/tools/perplexity-local-research.md",
+      "plane": "windows",
+      "git_status": "untracked"
+    },
+    {
+      "path": ".cc-intelligence/tools/perplexity-space.md",
+      "plane": "windows",
+      "git_status": "untracked"
+    },
+    {
+      "path": ".cc-intelligence/tools/remote-handoff.md",
+      "plane": "windows",
+      "git_status": "untracked"
+    },
+    {
+      "path": "LOCAL_MODEL_INTERACTION_STANDARD.md",
+      "plane": "windows",
+      "git_status": "untracked"
+    },
+    {
+      "path": "SOP_OPERATOR_CARD_V1.md",
+      "plane": "windows",
+      "git_status": "untracked"
+    },
+    {
+      "path": "WORKFLOWS.md",
+      "plane": "windows",
+      "git_status": "untracked"
+    },
+    {
+      "path": "WORKFLOW_VALIDATION_PROTOCOL_V1.md",
+      "plane": "windows",
+      "git_status": "untracked"
+    },
+    {
+      "path": "archive/",
+      "plane": "windows",
+      "git_status": "untracked"
+    },
+    {
+      "path": "archives/legacy/",
+      "plane": "windows",
+      "git_status": "untracked"
+    },
+    {
+      "path": "archives/trash_sweep_2026_05_07/",
+      "plane": "windows",
+      "git_status": "untracked"
+    },
+    {
+      "path": "artifacts/AUDIT_EXECUTIVE_SUMMARY.md",
+      "plane": "windows",
+      "git_status": "untracked"
+    },
+    {
+      "path": "artifacts/AUDIT_GAS_SYNC_proj-001.md",
+      "plane": "windows",
+      "git_status": "untracked"
+    },
+    {
+      "path": "artifacts/AUDIT_GLOBAL_SKILLS_2026_05_07.md",
+      "plane": "windows",
+      "git_status": "untracked"
+    },
+    {
+      "path": "artifacts/AUDIT_GOLD_STANDARD_proj-001.md",
+      "plane": "windows",
+      "git_status": "untracked"
+    },
+    {
+      "path": "artifacts/CODEX_REVIEW_RESPONSE.md",
+      "plane": "windows",
+      "git_status": "untracked"
+    },
+    {
+      "path": "artifacts/EXECUTIVE_AUDIT_REPORT_20260506.md",
+      "plane": "windows",
+      "git_status": "untracked"
+    },
+    {
+      "path": "artifacts/FINAL_SYSTEM_REPORT_SKILLS.md",
+      "plane": "windows",
+      "git_status": "untracked"
+    },
+    {
+      "path": "artifacts/MEGAPROMPT_GAS_MIGRATION.md",
+      "plane": "windows",
+      "git_status": "untracked"
+    },
+    {
+      "path": "artifacts/MEGA_PROMPT_AUDIT_001.md",
+      "plane": "windows",
+      "git_status": "untracked"
+    },
+    {
+      "path": "artifacts/MEGA_PROMPT_AUDIT_GAS_SYNC.md",
+      "plane": "windows",
+      "git_status": "untracked"
+    },
+    {
+      "path": "artifacts/MEGA_PROMPT_DUAL_EXPORT.md",
+      "plane": "windows",
+      "git_status": "untracked"
+    },
+    {
+      "path": "artifacts/PLAN_VALIDATED_FOR_EXECUTION.md",
+      "plane": "windows",
+      "git_status": "untracked"
+    },
+    {
+      "path": "artifacts/RVN_S1_HANDOFF_REPORT.md",
+      "plane": "windows",
+      "git_status": "untracked"
+    },
+    {
+      "path": "artifacts/SKILL_DEVELOPMENT_PLAYBOOK.md",
+      "plane": "windows",
+      "git_status": "untracked"
+    },
+    {
+      "path": "artifacts/SKILL_IMPLEMENTATION_ROADMAP.md",
+      "plane": "windows",
+      "git_status": "untracked"
+    },
+    {
+      "path": "artifacts/SKILL_LOADER_POLICY.md",
+      "plane": "windows",
+      "git_status": "untracked"
+    },
+    {
+      "path": "artifacts/all_tasks.csv",
+      "plane": "windows",
+      "git_status": "untracked"
+    },
+    {
+      "path": "artifacts/audit_kingkong.txt",
+      "plane": "windows",
+      "git_status": "untracked"
+    },
+    {
+      "path": "artifacts/audit_kingkong_v2.txt",
+      "plane": "windows",
+      "git_status": "untracked"
+    },
+    {
+      "path": "artifacts/audit_realme.txt",
+      "plane": "windows",
+      "git_status": "untracked"
+    },
+    {
+      "path": "artifacts/audit_realme_v2.txt",
+      "plane": "windows",
+      "git_status": "untracked"
+    },
+    {
+      "path": "artifacts/audit_report_wsl_bridge.md",
+      "plane": "windows",
+      "git_status": "untracked"
+    },
+    {
+      "path": "artifacts/audit_reports/MASTER_SYSTEM_AUDIT_2026-05-15.md",
+      "plane": "windows",
+      "git_status": "untracked"
+    },
+    {
+      "path": "artifacts/automation_health_report.json",
+      "plane": "windows",
+      "git_status": "untracked"
+    },
+    {
+      "path": "artifacts/benchmark_results_consolidated_v1.md",
+      "plane": "windows",
+      "git_status": "untracked"
+    },
+    {
+      "path": "artifacts/benchmark_suite_proj001_v1.md",
+      "plane": "windows",
+      "git_status": "untracked"
+    },
+    {
+      "path": "artifacts/benchmark_suite_proj014_v1.md",
+      "plane": "windows",
+      "git_status": "untracked"
+    },
+    {
+      "path": "artifacts/colors_properties_oled.txt",
+      "plane": "windows",
+      "git_status": "untracked"
+    },
+    {
+      "path": "artifacts/connectivity_validation_mp.xml",
+      "plane": "windows",
+      "git_status": "untracked"
+    },
+    {
+      "path": "artifacts/docs/",
+      "plane": "windows",
+      "git_status": "untracked"
+    },
+    {
+      "path": "artifacts/kingkong_audit_context.md",
+      "plane": "windows",
+      "git_status": "untracked"
+    },
+    {
+      "path": "artifacts/kingkong_audit_context_v2.md",
+      "plane": "windows",
+      "git_status": "untracked"
+    },
+    {
+      "path": "artifacts/kingkong_audit_context_v3.md",
+      "plane": "windows",
+      "git_status": "untracked"
+    },
+    {
+      "path": "artifacts/local_first_compliance_2026_05_07.md",
+      "plane": "windows",
+      "git_status": "untracked"
+    },
+    {
+      "path": "artifacts/path_reconciliation_report_2026_05_07.md",
+      "plane": "windows",
+      "git_status": "untracked"
+    },
+    {
+      "path": "artifacts/penguin_bashrc_clean.txt",
+      "plane": "windows",
+      "git_status": "untracked"
+    },
+    {
+      "path": "artifacts/perplexity_sync/",
+      "plane": "windows",
+      "git_status": "untracked"
+    },
+    {
+      "path": "artifacts/plans/",
+      "plane": "windows",
+      "git_status": "untracked"
+    },
+    {
+      "path": "artifacts/proj-001_sweep.csv",
+      "plane": "windows",
+      "git_status": "untracked"
+    },
+    {
+      "path": "artifacts/ps_resume_tunnel.ps1",
+      "plane": "windows",
+      "git_status": "untracked"
+    },
+    {
+      "path": "artifacts/realme_bashrc_clean.txt",
+      "plane": "windows",
+      "git_status": "untracked"
+    },
+    {
+      "path": "artifacts/realme_termux_properties_clean.txt",
+      "plane": "windows",
+      "git_status": "untracked"
+    },
+    {
+      "path": "artifacts/realme_zsh_patch.txt",
+      "plane": "windows",
+      "git_status": "untracked"
+    },
+    {
+      "path": "artifacts/realme_zshrc_clean.txt",
+      "plane": "windows",
+      "git_status": "untracked"
+    },
+    {
+      "path": "artifacts/registry_skills_audit_2026_05_07.md",
+      "plane": "windows",
+      "git_status": "untracked"
+    },
+    {
+      "path": "artifacts/reports/DELIVERY_SUMMARY.md",
+      "plane": "windows",
+      "git_status": "untracked"
+    },
+    {
+      "path": "artifacts/reports/ROOT_SWEEP_REPORT_v2.md",
+      "plane": "windows",
+      "git_status": "untracked"
+    },
+    {
+      "path": "artifacts/reports/SESSION_REPORT_20260515_FINAL.md",
+      "plane": "windows",
+      "git_status": "untracked"
+    },
+    {
+      "path": "artifacts/reports/SESSION_REPORT_20260515_PENGUIN_BRIDGE.md",
+      "plane": "windows",
+      "git_status": "untracked"
+    },
+    {
+      "path": "artifacts/reports/SESSION_REPORT_RVN_FINAL_SYNC.md",
+      "plane": "windows",
+      "git_status": "untracked"
+    },
+    {
+      "path": "artifacts/reports/gantt_proj-001.puml",
+      "plane": "windows",
+      "git_status": "untracked"
+    },
+    {
+      "path": "artifacts/reports/test_diag.puml",
+      "plane": "windows",
+      "git_status": "untracked"
+    },
+    {
+      "path": "artifacts/reports/test_ventas_2026_04.xlsx",
+      "plane": "windows",
+      "git_status": "untracked"
+    },
+    {
+      "path": "artifacts/reports/workflow_proj-001.puml",
+      "plane": "windows",
+      "git_status": "untracked"
+    },
+    {
+      "path": "artifacts/reports/workflow_proj-008.puml",
+      "plane": "windows",
+      "git_status": "untracked"
+    },
+    {
+      "path": "artifacts/reports/workflow_proj-023.puml",
+      "plane": "windows",
+      "git_status": "untracked"
+    },
+    {
+      "path": "artifacts/reports/workflow_proj-024.puml",
+      "plane": "windows",
+      "git_status": "untracked"
+    },
+    {
+      "path": "artifacts/reports/workflow_proj-025.puml",
+      "plane": "windows",
+      "git_status": "untracked"
+    },
+    {
+      "path": "artifacts/session_reports/",
+      "plane": "windows",
+      "git_status": "untracked"
+    },
+    {
+      "path": "artifacts/sprint2_h01_h05_result.json",
+      "plane": "windows",
+      "git_status": "untracked"
+    },
+    {
+      "path": "artifacts/templates/",
+      "plane": "windows",
+      "git_status": "untracked"
+    },
+    {
+      "path": "artifacts/termux_colors.properties",
+      "plane": "windows",
+      "git_status": "untracked"
+    },
+    {
+      "path": "artifacts/termux_properties_essential.txt",
+      "plane": "windows",
+      "git_status": "untracked"
+    },
+    {
+      "path": "artifacts/tmp_key.pub",
+      "plane": "windows",
+      "git_status": "untracked"
+    },
+    {
+      "path": "artifacts/tmux_battery.sh",
+      "plane": "windows",
+      "git_status": "untracked"
+    },
+    {
+      "path": "artifacts/tmux_conf_standard.txt",
+      "plane": "windows",
+      "git_status": "untracked"
+    },
+    {
+      "path": "artifacts/tmux_standard.conf",
+      "plane": "windows",
+      "git_status": "untracked"
+    },
+    {
+      "path": "artifacts/wsl_resume_patch.sh",
+      "plane": "windows",
+      "git_status": "untracked"
+    },
+    {
+      "path": "artifacts/wsl_resume_patch_v1.1.sh",
+      "plane": "windows",
+      "git_status": "untracked"
+    },
+    {
+      "path": "artifacts/wsl_resume_patch_v1.2.sh",
+      "plane": "windows",
+      "git_status": "untracked"
+    },
+    {
+      "path": "artifacts/zshrc_clean",
+      "plane": "windows",
+      "git_status": "untracked"
+    },
+    {
+      "path": "artifacts/zshrc_kingkong",
+      "plane": "windows",
+      "git_status": "untracked"
+    },
+    {
+      "path": "artifacts/zshrc_kingkong_v2",
+      "plane": "windows",
+      "git_status": "untracked"
+    },
+    {
+      "path": "artifacts/zshrc_penguin_v1",
+      "plane": "windows",
+      "git_status": "untracked"
+    },
+    {
+      "path": "artifacts/zshrc_realme_v2",
+      "plane": "windows",
+      "git_status": "untracked"
+    },
+    {
+      "path": "artifacts/zshrc_repair.zshrc",
+      "plane": "windows",
+      "git_status": "untracked"
+    },
+    {
+      "path": "config/MASTER_REGISTRY.json",
+      "plane": "windows",
+      "git_status": "untracked"
+    },
+    {
+      "path": "config/templates/",
+      "plane": "windows",
+      "git_status": "untracked"
+    },
+    {
+      "path": "data/handoffs/CONTEXT_DUCKBASE_2026.md",
+      "plane": "windows",
+      "git_status": "untracked"
+    },
+    {
+      "path": "data/handoffs/snapshot_EVO-DASH-OPT.md",
+      "plane": "windows",
+      "git_status": "untracked"
+    },
+    {
+      "path": "data/handoffs/snapshot_EVO-SMART-001.md",
+      "plane": "windows",
+      "git_status": "untracked"
+    },
+    {
+      "path": "data/observability.duckdb",
+      "plane": "windows",
+      "git_status": "untracked"
+    },
+    {
+      "path": "docs/CENTRAL_COMMAND_ORCHESTRATION_PROMPT_v4.7.md",
+      "plane": "windows",
+      "git_status": "untracked"
+    },
+    {
+      "path": "docs/EXECUTIVE_SUMMARY_ARCHITECTURE.md",
+      "plane": "windows",
+      "git_status": "untracked"
+    },
+    {
+      "path": "docs/GUIDE_ORCHESTRATION_FLOW.md",
+      "plane": "windows",
+      "git_status": "untracked"
+    },
+    {
+      "path": "docs/PERPLEXITY_SPACE_AUTOMATION_REFERENCE.md",
+      "plane": "windows",
+      "git_status": "untracked"
+    },
+    {
+      "path": "docs/SESSION_BLUEPRINT.md",
+      "plane": "windows",
+      "git_status": "untracked"
+    },
+    {
+      "path": "docs/superpowers/",
+      "plane": "windows",
+      "git_status": "untracked"
+    },
+    {
+      "path": "gas_source_temp/",
+      "plane": "windows",
+      "git_status": "untracked"
+    },
+    {
+      "path": "get_gas_source.py",
+      "plane": "windows",
+      "git_status": "untracked"
+    },
+    {
+      "path": "prompts/",
+      "plane": "windows",
+      "git_status": "untracked"
+    },
+    {
+      "path": "research/CC_Architecture_Review.md",
+      "plane": "windows",
+      "git_status": "untracked"
+    },
+    {
+      "path": "scripts/maintenance/ejecutar_drafts_abril.bat",
+      "plane": "windows",
+      "git_status": "untracked"
+    },
+    {
+      "path": "scripts/model_benchmark_perplexity.py",
+      "plane": "windows",
+      "git_status": "untracked"
+    },
+    {
+      "path": "scripts/perplexity_module/integrated_research.py",
+      "plane": "windows",
+      "git_status": "untracked"
+    },
+    {
+      "path": "scripts/perplexity_module/mcp_server.py",
+      "plane": "windows",
+      "git_status": "untracked"
+    },
+    {
+      "path": "scripts/perplexity_module/perplexity_browser_scraper.py",
+      "plane": "windows",
+      "git_status": "untracked"
+    },
+    {
+      "path": "scripts/sync_docs.py",
+      "plane": "windows",
+      "git_status": "untracked"
+    },
+    {
+      "path": "scripts/test_perplexity_playwright.py",
+      "plane": "windows",
+      "git_status": "untracked"
+    },
+    {
+      "path": "temp_unzip/",
+      "plane": "windows",
+      "git_status": "untracked"
+    },
+    {
+      "path": "tests/",
+      "plane": "windows",
+      "git_status": "untracked"
+    },
+    {
+      "path": "tools/ACTION_PLAN.md",
+      "plane": "windows",
+      "git_status": "untracked"
+    },
+    {
+      "path": "tools/cc-connect.ps1",
+      "plane": "windows",
+      "git_status": "untracked"
+    },
+    {
+      "path": "tools/cc-connect.sh",
+      "plane": "windows",
+      "git_status": "untracked"
+    },
+    {
+      "path": "tools/consolidate_servicios.py",
+      "plane": "windows",
+      "git_status": "untracked"
+    },
+    {
+      "path": "tools/duckbase_logger.py",
+      "plane": "windows",
+      "git_status": "untracked"
+    },
+    {
+      "path": "tools/encoding_normalizer.py",
+      "plane": "windows",
+      "git_status": "untracked"
+    },
+    {
+      "path": "tools/handoff.py",
+      "plane": "windows",
+      "git_status": "untracked"
+    },
+    {
+      "path": "tools/maintenance/",
+      "plane": "windows",
+      "git_status": "untracked"
+    },
+    {
+      "path": "tools/migrate_legacy_sessions.py",
+      "plane": "windows",
+      "git_status": "untracked"
+    },
+    {
+      "path": "tools/normalize_registry.py",
+      "plane": "windows",
+      "git_status": "untracked"
+    },
+    {
+      "path": "tools/outlook_resolver.py",
+      "plane": "windows",
+      "git_status": "untracked"
+    },
+    {
+      "path": "tools/penguin_bridge_sync.py",
+      "plane": "windows",
+      "git_status": "untracked"
+    },
+    {
+      "path": "tools/pplx.ps1",
+      "plane": "windows",
+      "git_status": "untracked"
+    },
+    {
+      "path": "tools/registry_cleanup.py",
+      "plane": "windows",
+      "git_status": "untracked"
+    },
+    {
+      "path": "tools/registry_path_validator.py",
+      "plane": "windows",
+      "git_status": "untracked"
+    },
+    {
+      "path": "tools/reporting/",
+      "plane": "windows",
+      "git_status": "untracked"
+    },
+    {
+      "path": "tools/segment_onedrive.py",
+      "plane": "windows",
+      "git_status": "untracked"
+    },
+    {
+      "path": "tools/session-bridge/",
+      "plane": "windows",
+      "git_status": "untracked"
+    },
+    {
+      "path": "tools/shortcuts/",
+      "plane": "windows",
+      "git_status": "untracked"
+    },
+    {
+      "path": "tools/skill_benchmark.py",
+      "plane": "windows",
+      "git_status": "untracked"
+    },
+    {
+      "path": "tools/skill_freshness_check.py",
+      "plane": "windows",
+      "git_status": "untracked"
+    },
+    {
+      "path": "tools/skill_loader.py",
+      "plane": "windows",
+      "git_status": "untracked"
+    },
+    {
+      "path": "tools/skill_migration_v3.py",
+      "plane": "windows",
+      "git_status": "untracked"
+    },
+    {
+      "path": "tools/skills/modo-dev.skill",
+      "plane": "windows",
+      "git_status": "untracked"
+    },
+    {
+      "path": "tools/skills/modo-dev/",
+      "plane": "windows",
+      "git_status": "untracked"
+    },
+    {
+      "path": "tools/skills/skill-aev-email-generator/",
+      "plane": "windows",
+      "git_status": "untracked"
+    },
+    {
+      "path": "tools/skills/skill-ron-processor/",
+      "plane": "windows",
+      "git_status": "untracked"
+    },
+    {
+      "path": "tools/test_stealth_bypass.py",
+      "plane": "windows",
+      "git_status": "untracked"
+    },
+    {
+      "path": "tools/wsl2win.sh",
+      "plane": "windows",
+      "git_status": "untracked"
+    },
+    {
+      "path": "tools/wsl_bridge/",
+      "plane": "windows",
+      "git_status": "untracked"
+    }
+  ],
+  "last_tool_outputs": [],
+  "cognitive_bridge": {
+    "objective": "Migraci\u00f3n Total de Sesi\u00f3n Antigravity -> Gemini CLI",
+    "line_of_thought": "Hemos completado la infraestructura de handoff v1.2. Se estandarizaron todos los nodos (Realme, Kingkong, Penguin) y se inyectaron los t\u00faneles en PowerShell y WSL. El sistema ahora genera un Deep Bridge (Markdown) para una re-hidrataci\u00f3n cognitiva completa. El usuario desea cerrar esta sesi\u00f3n y retomar desde la terminal.",
+    "open_blockers": [],
+    "next_immediate_action": "Run /status to verify environment.",
+    "model_hints": {
+      "recommended_model": "gemini-3.1-pro",
+      "reason": "Maintaining complex context continuity."
+    }
+  },
+  "environment_snapshot": {
+    "tmux_session": "remote",
+    "active_skills": [
+      {
+        "name": "caveman-mode",
+        "path": "C:\\Users\\msi\\.gemini\\antigravity\\knowledge\\caveman_mode_skill.md",
+        "version": "1.0.0",
+        "agents": [
+          "claude",
+          "gemini"
+        ],
+        "scope": "global",
+        "status": "valid"
+      }
+    ],
+    "device_profile": "BLUEDRAGON",
+    "t400_mode": false
+  }
+}
