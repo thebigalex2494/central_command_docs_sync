@@ -232,7 +232,7 @@ replaces:
 
 ## 1. Identity & Path Convention
 
-- **%CC%**: `%CC%` — PRIMARY WORKSPACE. All execution here.
+- **%CC%**: `C:\Users\msi\central_command` — PRIMARY WORKSPACE. All execution here.
 - **%DRIVE%**: `I:\Mi unidad\central_command` — REFERENCE ONLY. Stable Google Drive mirror.
 - **WSL Path**: `/mnt/c/Users/msi/central_command`
 
@@ -286,13 +286,13 @@ $hostname = $env:COMPUTERNAME
 
 ```powershell
 # Inline task delegation to Gemini CLI
-python %CC%\tools\session-bridge\gemini_dispatch.py --task "task description"
+python C:\Users\msi\central_command\tools\session-bridge\gemini_dispatch.py --task "task description"
 
 # Task from file (complex tasks)
-python %CC%\tools\session-bridge\gemini_dispatch.py --task-file %CC%\tasks\my_task.md
+python C:\Users\msi\central_command\tools\session-bridge\gemini_dispatch.py --task-file C:\Users\msi\central_command\tasks\my_task.md
 
 # Restore last remote session (post-SSH workflow)
-python %CC%\tools\session-bridge\session_bridge.py --load gemini latest --output md
+python C:\Users\msi\central_command\tools\session-bridge\session_bridge.py --load gemini latest --output md
 ```
 
 ## 8. Skill Loading Protocol (v3.0)
@@ -425,7 +425,7 @@ Save to `artifacts/session_reports/SESSION_{YYYY-MM-DD}_{HH-MM}.md`:
 
 ```python
 # Execute after generating report
-python %CC%\tools\duckbase_logger.py
+python C:\Users\msi\central_command\tools\duckbase_logger.py
 # Or direct insert into data/observability.duckdb:
 # Tables: session_history (session_id, project_id, resumen, resultado)
 #         agent_performance (metrics estimated for the session)
@@ -500,32 +500,32 @@ description: >
 
 ### `/sessions` — List all CLI sessions
 ```powershell
-python %CC%\tools\session-bridge\session_bridge.py --list
+python C:\Users\msi\central_command\tools\session-bridge\session_bridge.py --list
 ```
 
 ### `/load-session gemini [latest|index]` — Restore Gemini CLI session
 ```powershell
-python %CC%\tools\session-bridge\session_bridge.py --load gemini latest --output md
-python %CC%\tools\session-bridge\session_bridge.py --load gemini 2 --output md
+python C:\Users\msi\central_command\tools\session-bridge\session_bridge.py --load gemini latest --output md
+python C:\Users\msi\central_command\tools\session-bridge\session_bridge.py --load gemini 2 --output md
 ```
 
 ### `/load-session claude [project-slug]` — Restore Claude Code session
 ```powershell
-python %CC%\tools\session-bridge\session_bridge.py --load claude C--Users-msi-central-command --output md
+python C:\Users\msi\central_command\tools\session-bridge\session_bridge.py --load claude C--Users-msi-central-command --output md
 ```
 
 ## GEMINI CLI DISPATCHER
 
 ### `/dispatch "task"` — Send task to Gemini CLI (quota overflow)
 ```powershell
-python %CC%\tools\session-bridge\gemini_dispatch.py --task "Summarize the architecture of proj-001"
-python %CC%\tools\session-bridge\gemini_dispatch.py --task-file %CC%\tasks\my_task.md
-python %CC%\tools\session-bridge\gemini_dispatch.py --task "audit this plan" --context %CC%\sessions\SESSION_proj-001.md
+python C:\Users\msi\central_command\tools\session-bridge\gemini_dispatch.py --task "Summarize the architecture of proj-001"
+python C:\Users\msi\central_command\tools\session-bridge\gemini_dispatch.py --task-file C:\Users\msi\central_command\tasks\my_task.md
+python C:\Users\msi\central_command\tools\session-bridge\gemini_dispatch.py --task "audit this plan" --context C:\Users\msi\central_command\sessions\SESSION_proj-001.md
 ```
 
 ### `/session-sync` — Pull latest CLI session after SSH workflow
 ```powershell
-python %CC%\tools\session-bridge\gemini_dispatch.py --session-sync
+python C:\Users\msi\central_command\tools\session-bridge\gemini_dispatch.py --session-sync
 ```
 
 ## Quick Commands
@@ -648,8 +648,8 @@ Read from `automation_health_report.json`:
 ## PowerShell Commands (Data Gathering)
 
 ```powershell
-Get-ChildItem -Path "%CC%\sessions" -Filter "SESSION_*.md" | Select-Object Name
-$reg = Get-Content "%CC%\Projects\data\projects-registry.json" | ConvertFrom-Json
+Get-ChildItem -Path "C:\Users\msi\central_command\sessions" -Filter "SESSION_*.md" | Select-Object Name
+$reg = Get-Content "C:\Users\msi\central_command\Projects\data\projects-registry.json" | ConvertFrom-Json
 $reg.projects | Where-Object { $_.status -eq 'active' } | Select-Object id, name, type, last_activity
 ```
 
@@ -805,7 +805,7 @@ from pathlib import Path
 import duckdb
 
 
-CC_ROOT = Path(r"%CC%")
+CC_ROOT = Path(r"C:\Users\msi\central_command")
 DB_PATH = CC_ROOT / "data" / "observability.duckdb"
 CCI_INDEX = CC_ROOT / ".cc-intelligence" / "INDEX.md"
 

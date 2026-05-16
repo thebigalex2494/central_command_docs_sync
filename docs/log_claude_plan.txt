@@ -1,0 +1,504 @@
+❯ Read HARDWARE PROFILE & LOCAL MODEL ORCHESTRATION.md
+
+● Voy a localizar el archivo primero.
+
+  Searched for 1 pattern, read 1 file (ctrl+o to expand)
+
+● Este es el prompt detallado de optimización. Entiendo el objetivo: convertir Central Command en un orquestador consciente del hardware con un roster de modelos específico y reglas de enrutamiento estrictas. Ahora necesito evaluar el
+  gap entre el estado actual y el requerido antes de diseñar el plan.
+
+  Voy a explorar la infraestructura actual en paralelo para entender qué existe vs. qué hay que cambiar.
+
+● 2 Explore agents finished (ctrl+o to expand)
+   ├ Audit Ollama runtime & config state · 14 tool uses · 33.9k tokens
+   │ ⎿  Done
+   └ Map Central Command code infrastructure · 17 tool uses · 56.2k tokens
+     ⎿  Done
+
+● Tengo el panorama completo. Central Command ya tiene infraestructura madura (5-tier routing, agents.yaml como SSoT, classifier con 4 fases, circuit breaker). El gap real no es arquitectónico — es:
+  1. Modelos faltantes en Ollama (llama3.1:8b, gemma2:9b, deepseek-coder-v2:16b, nomic-embed-text, etc.)
+  2. Constantes en config.py desactualizadas vs. roster del hardware profile
+  3. agents.yaml apunta a modelos que no coinciden con el roster requerido
+  4. Faltan guardrails de hardware (no dos BALANCED simultáneos, VRAM accounting)
+  5. Puerto default en providers es 11434, real es 11435
+
+  Antes de diseñar, leo los archivos críticos para tener líneas exactas.
+
+  Read 2 files (ctrl+o to expand)
+
+● Tengo todo lo que necesito. Mapeo rápido del gap:
+
+  Estado actual vs. requerido:
+  - ✅ OLLAMA_MODELS apunta a /mnt/d/moved_from_c/ollama/models (correcto)
+  - ✅ Puerto 11435 correcto en OLLAMA_BASE_URL
+  - ❌ Defaults en ollama_provider.py:16 y registry.py:19 caen a 11434
+  - ❌ Modelos faltantes: llama3.1:8b, gemma2:9b, mistral:7b, deepseek-coder-v2:16b (tag específico), qwen2.5-coder:14b, nomic-embed-text
+  - ❌ agents.yaml tiene tags desalineados (qwen2.5-coder:7b → debería ser :14b, gemma3:latest → gemma2:9b, llama3:latest → llama3.1:8b)
+  - ❌ Sin hw_tier explícito (FAST/BALANCED/ASYNC) — solo weight (light/medium/heavy)
+  - ❌ Sin guardrail que impida cargar 2 modelos BALANCED simultáneos
+  - ❌ Sin script de bootstrap/health-check que verifique el roster
+  - ⚠️ Dos procesos de Ollama corriendo (systemd + manual)
+
+  Ahora escribo el plan final. Es un trabajo de alineación quirúrgica, no reescritura — la arquitectura de routing ya existe.
+
+● Updated plan
+  ⎿  Error writing file
+
+  Read 1 file (ctrl+o to expand)
+
+● Ahora sobreescribo el plan con el nuevo enfoque de hardware-aware orchestration.
+
+● Updated plan
+  ⎿  /plan to preview
+
+● Plan escrito. Ahora cargo el schema de ExitPlanMode para presentarlo al usuario.
+  ⎿  Tool use rejected
+  ⎿  You're out of extra usage · resets 7pm (America/Bogota)
+     /login to switch to an API usage-billed account.
+
+✻ Worked for 6m 47s
+
+
+● Updated plan
+  ⎿  Added 237 lines, removed 152 lines
+        1 -# Plan: Evaluación de Modelos Ollama — Orquestación Local
+        1 +# Plan: Central Command Hardware-Aware Ollama Orchestration
+        2
+        3 -## Contexto
+        3 +## Context
+        4
+        5 -Ollama está operativo en `localhost:11435` con 3 modelos disponibles:
+        6 -- `qwen3:latest` (8.2B) — razonamiento general
+        7 -- `qwen2.5-coder:latest` (7.6B) — generación de código
+        8 -- `deepseek-v3.1:671b-cloud` (405B remoto) — auditoría/lógica compleja
+        5 +El usuario compartió `HARDWARE PROFILE & LOCAL MODEL ORCHESTRATION.md` con el
+        6 +objetivo de que Central Command ejecute Ollama de forma **efectiva y consciente
+        7 +del hardware** (i7-10700F, 32 GB RAM, RTX 3060 12 GB VRAM, modelos en D:).
+        8
+       10 -Ya existe infraestructura en `scripts/central_command/` (providers, benchmark suite, router).
+       11 -El objetivo es un **plan de prueba reproducible** donde Claude actúa como orquestador y las
+       12 -instrucciones pueden ser ejecutadas por otra sesión de Claude, Gemini, o directamente por Qwen.
+        9 +La fase previa (evaluación de qwen3/qwen2.5-coder/deepseek, commit `6f9d86e`)
+       10 +ya concluyó. Este plan **reemplaza** el anterior.
+       11
+       14 ----
+       12 +**Problema a resolver:** Ollama está operativo y la infraestructura de routing
+       13 +en `scripts/central_command/local_router/` es madura (classifier de 4 fases,
+       14 +circuit breaker, agents.yaml como SSoT), pero:
+       15
+       16 -## Arquitectura de Orquestación
+       16 +- El **roster de modelos instalados no coincide** con el exigido por el perfil
+       17 +  de hardware (faltan `llama3.1:8b`, `gemma2:9b`, `mistral:7b`,
+       18 +  `deepseek-coder-v2:16b`, `nomic-embed-text`).
+       19 +- Los tags en `agents.yaml` apuntan a versiones incorrectas (`qwen2.5-coder:7b`
+       20 +  cuando el roster pide `:14b`; `gemma3:latest` cuando pide `gemma2:9b`;
+       21 +  `llama3:latest` cuando pide `llama3.1:8b`).
+       22 +- No existe la **semántica de tiers FAST/BALANCED/ASYNC** — solo un campo
+       23 +  `weight: light|medium|heavy` que se usa para routing de Claude, no para
+       24 +  política de VRAM local.
+       25 +- No hay **guardrails de hardware** (el spec exige "NEVER load two BALANCED
+       26 +  models simultaneously").
+       27 +- Defaults de puerto en 2 archivos caen a `11434` si `config.OLLAMA_BASE_URL`
+       28 +  falla; el puerto real es `11435`.
+       29 +- No existe un **script de bootstrap/health-check** que verifique los 4 pasos
+       30 +  de inicialización exigidos por el spec.
+       31
+       18 -```
+       19 -[Central Command / Claude Haiku]  ← orquestador, lleva el tablero de control
+       20 -        │
+       21 -        ├── TAREA A → [qwen3]         Razonamiento general + routing
+       22 -        ├── TAREA B → [qwen2.5-coder] Generación de código Python
+       23 -        └── TAREA C → [deepseek-v3.1] Auditoría lógica / revisión
+       24 -```
+       32 +**Resultado esperado:** Central Command orquesta Ollama con roster correcto,
+       33 +routing por tier, guardrails activos, y un bootstrap reproducible.
+       34
+       26 -Cada tarea produce un resultado JSON en `data/agent-state/eval_<modelo>_<timestamp>.json`.
+       27 -Central Command agrega los resultados al final y produce un reporte comparativo.
+       28 -
+       35  ---
+       36
+       31 -## Fase 1 — Verificación de entorno (Claude ejecuta directamente)
+       37 +## Current State Summary
+       38
+       33 -```bash
+       34 -# 1a. Confirmar modelos disponibles
+       35 -curl -s http://localhost:11435/api/tags | python3 -c "
+       36 -import json,sys; data=json.load(sys.stdin)
+       37 -for m in data['models']: print(m['name'], m['details']['parameter_size'])
+       38 -"
+       39 +| Aspecto | Estado |
+       40 +|---|---|
+       41 +| Ollama port | ✅ 11435 (config correcta) |
+       42 +| OLLAMA_MODELS | ✅ `/mnt/d/moved_from_c/ollama/models` |
+       43 +| Modelos FAST instalados | ❌ ninguno del roster (hay `qwen3:8b` no requerido) |
+       44 +| Modelos BALANCED instalados | ❌ `qwen2.5-coder` tag `:7.6B` en vez de `:14b`; falta `deepseek-coder-v2:16b` |
+       45 +| Modelos EMBED instalados | ❌ ninguno |
+       46 +| `agents.yaml` alineado | ❌ 5 referencias de modelo desalineadas |
+       47 +| Tier semantics | ⚠️ existe `weight` pero no `hw_tier` explícito |
+       48 +| Guardrail BALANCED concurrente | ❌ inexistente |
+       49 +| Bootstrap / health-check | ❌ inexistente |
+       50 +| Procesos Ollama | ⚠️ 2 instancias corriendo (systemd + manual) |
+       51
+       40 -# 1b. Test de latencia mínima (ping a cada modelo)
+       41 -for MODEL in qwen3:latest qwen2.5-coder:latest deepseek-v3.1:671b-cloud; do
+       42 -  echo "--- $MODEL ---"
+       43 -  time curl -s http://localhost:11435/api/generate \
+       44 -    -d "{\"model\":\"$MODEL\",\"prompt\":\"Responde solo: OK\",\"stream\":false}" | \
+       45 -    python3 -c "import json,sys; r=json.load(sys.stdin); print(r.get('response','ERROR'))"
+       46 -done
+       47 -```
+       48 -
+       49 -**Criterio de éxito**: Los 3 modelos responden "OK" en < 60s.
+       50 -
+       52  ---
+       53
+       53 -## Fase 2 — Benchmarks por modelo (instrucciones delegables)
+       54 +## Proposed Approach
+       55
+       55 -### TAREA A: Delegar a qwen3 — Razonamiento y Routing
+       56 -> Copiar como instrucción para otra sesión de Claude/Gemini:
+       56 +**Estrategia:** Alineación quirúrgica. No reescribir el router — solo corregir
+       57 +constantes, agregar semántica `hw_tier`, crear bootstrap y un guardrail ligero.
+       58 +Ejecución en 4 fases ordenadas por dependencia.
+       59
+       58 -```
+       59 -CONTEXTO: Ollama activo en localhost:11435. Modelo: qwen3:latest
+       60 +### Phase 1 — Canonical Reference & Model Install (fundacional)
+       61
+       61 -EJECUTA estos 3 prompts via HTTP y guarda las respuestas en data/agent-state/:
+       62 +**1.1** Crear `data/orchestration/HARDWARE_PROFILE.md`
+       63 +- Versión canónica, en repo, del perfil de hardware (copia técnica del
+       64 +  documento del usuario, en inglés técnico).
+       65 +- Único archivo donde vive el roster oficial. Los demás referencian este.
+       66 +- Registrar en `AGENTS.md` como lectura obligatoria al iniciar sesión.
+       67
+       63 -PROMPT 1 (Razonamiento):
+       64 -  "Tengo una lista de tareas: [ETL de ventas, scraping web, envío de email, auditoría de código,
+       65 -   generación de reporte PDF]. ¿Cuál modelo especializado asignarías a cada tarea entre:
+       66 -   qwen2.5-coder, deepseek-v3.1, claude-3.5-sonnet? Justifica en 3 líneas por tarea."
+       68 +**1.2** Crear `scripts/maintenance/ollama_bootstrap.sh`
+       69 +- Verifica Ollama activo en `localhost:11435`.
+       70 +- Verifica `OLLAMA_MODELS` apunta a `/mnt/d/...` (o `D:\...` equivalente).
+       71 +- Lista modelos instalados vs. roster requerido.
+       72 +- Ejecuta `ollama pull` **solo para los faltantes** (idempotente).
+       73 +- Detecta instancias duplicadas de `ollama serve` y advierte (no mata sin
+       74 +  confirmación — protocolo de acción reversible).
+       75 +- Modelos a instalar (≈ 20-25 GB en D:):
+       76 +  - `llama3.1:8b` (FAST default, ~5 GB)
+       77 +  - `gemma2:9b` (FAST alternativa, ~5.5 GB)
+       78 +  - `mistral:7b` (FAST fallback, ~4 GB)
+       79 +  - `deepseek-coder-v2:16b` (BALANCED primario, ~9 GB)
+       80 +  - `qwen2.5-coder:14b` (BALANCED alternativa, ~8 GB)
+       81 +  - `nomic-embed-text` (EMBED, ~275 MB)
+       82 +- **No descarga automáticamente** modelos ASYNC (`mixtral:8x7b`,
+       83 +  `llama3:70b`) ni el segundo embed (`mxbai-embed-large`) — opcionales,
+       84 +  quedan como comentario en el script.
+       85
+       68 -PROMPT 2 (Clasificación de intención):
+       69 -  "Clasifica estas solicitudes como: CODE | AUDIT | RESEARCH | BROWSE | CHAT
+       70 -   1. 'Refactoriza la función de autenticación'
+       71 -   2. 'Busca vulnerabilidades en este módulo'
+       72 -   3. 'Investiga las mejores prácticas de ETL en 2025'
+       73 -   4. 'Navega a AppSheet y actualiza la tabla Users'
+       74 -   5. '¿Cómo estás hoy?'"
+       86 +### Phase 2 — Config Alignment (correcciones de código)
+       87
+       76 -PROMPT 3 (Síntesis):
+       77 -  "Resume en bullet points el protocolo Local-First: usar modelos locales antes de APIs externas."
+       88 +**2.1** `scripts/central_command/config.py` — agregar sección "Hardware Profile"
+       89 +- Bloque nuevo tras línea 52 (`OLLAMA_TIMEOUT`):
+       90 +  ```python
+       91 +  # --- Hardware Profile (D: drive, RTX 3060 12GB VRAM, 32GB RAM) ---
+       92 +  OLLAMA_MODELS_PATH = os.environ.get(
+       93 +      "OLLAMA_MODELS", "/mnt/d/moved_from_c/ollama/models"
+       94 +  )
+       95 +  HW_TIER_FAST     = {"vram_gb": 6,  "max_concurrent": 2, "target_tps": 20}
+       96 +  HW_TIER_BALANCED = {"vram_gb": 10, "max_concurrent": 1, "target_tps": 5}
+       97 +  HW_TIER_ASYNC    = {"vram_gb": 12, "max_concurrent": 1, "target_tps": 1}
+       98 +  MODEL_ROSTER = {
+       99 +      "fast":     ["llama3.1:8b", "gemma2:9b", "mistral:7b"],
+      100 +      "balanced": ["deepseek-coder-v2:16b", "qwen2.5-coder:14b"],
+      101 +      "async":    ["mixtral:8x7b", "llama3:70b"],
+      102 +      "embed":    ["nomic-embed-text", "mxbai-embed-large"],
+      103 +  }
+      104 +  DEFAULT_MODEL_FAST     = "llama3.1:8b"
+      105 +  DEFAULT_MODEL_BALANCED = "deepseek-coder-v2:16b"
+      106 +  DEFAULT_MODEL_EMBED    = "nomic-embed-text"
+      107 +  QUANTIZATION_DEFAULT   = "Q4_K_M"
+      108 +  ```
+      109 +- Actualizar constantes existentes (líneas 6-10):
+      110 +  - `MODEL_LOCAL_CODER = "deepseek-coder-v2:16b"` (era `"qwen2.5-coder"`)
+      111 +  - `MODEL_LOCAL_CHAT  = "llama3.1:8b"` (era `"qwen3"`)
+      112 +  - `MODEL_DEEPSEEK    = "deepseek-coder-v2:16b"` (era `"deepseek-coder-v2"` — agregar tag)
+      113 +  - Mantener `MODEL_REASONER` y `MODEL_QWEN3` (usados en otros sitios).
+      114
+       79 -GUARDA resultados en: data/agent-state/eval_qwen3_<timestamp>.json
+       80 -REPORTA: latencia por prompt (segundos), calidad percibida (1-5), observaciones.
+       81 -```
+      115 +**2.2** `scripts/central_command/local_router/agents.yaml` — alinear tags
+      116 +- `coder`: `qwen2.5-coder:7b` → `deepseek-coder-v2:16b`; `weight: medium`;
+      117 +  agregar `hw_tier: balanced`
+      118 +- `auditor`: `deepseek-coder-v2:latest` → `deepseek-coder-v2:16b`; agregar
+      119 +  `hw_tier: balanced`
+      120 +- `chat`: `gemma3:latest` → `llama3.1:8b`; agregar `hw_tier: fast`
+      121 +- `summarizer`: `llama3:latest` → `llama3.1:8b`; agregar `hw_tier: fast`
+      122 +- `aider`: `ollama/qwen2.5-coder:7b` → `ollama/deepseek-coder-v2:16b`; agregar
+      123 +  `hw_tier: balanced`
+      124 +- Actualizar comentarios del encabezado (líneas 2-4) para documentar el nuevo
+      125 +  campo `hw_tier`.
+      126
+       83 ----
+      127 +**2.3** Fix default port en providers
+      128 +- `scripts/central_command/providers/ollama_provider.py:16` — cambiar
+      129 +  `"http://localhost:11434"` → `"http://localhost:11435"` (solo el fallback
+      130 +  del `getattr`).
+      131 +- `scripts/central_command/local_router/registry.py:19` — mismo cambio.
+      132
+       85 -### TAREA B: Delegar a qwen2.5-coder — Generación de Código
+       86 -> Copiar como instrucción para otra sesión de Claude/Gemini:
+      133 +### Phase 3 — Hardware Guard (política de concurrencia)
+      134
+       88 -```
+       89 -CONTEXTO: Ollama activo en localhost:11435. Modelo: qwen2.5-coder:latest
+      135 +**3.1** Crear `scripts/central_command/local_router/hardware_guard.py`
+      136 +- Función pública `check_before_load(model: str, tier: str) -> None`.
+      137 +- Consulta `http://localhost:11435/api/ps` para ver modelos actualmente
+      138 +  cargados en VRAM.
+      139 +- Si se va a cargar un modelo `balanced` y ya hay otro `balanced` activo:
+      140 +  - **Modo estricto** (default): `raise HardwareGuardViolation`.
+      141 +  - **Modo soft** (env `CENTRAL_CMD_HW_GUARD=warn`): log warning y continúa.
+      142 +- Si hay `ollama ps` con modelo stale > 10 min sin uso: log sugerencia de
+      143 +  unload (no ejecuta `ollama stop` sin confirmación).
+      144 +- Llamada al guardrail desde `executor.py` (alrededor de línea 245, donde se
+      145 +  instancia `OllamaProvider`) — una línea antes del instanciado:
+      146 +  `hardware_guard.check_before_load(agent_def.model, agent_def.hw_tier)`.
+      147
+       91 -EJECUTA estos 2 prompts y evalúa la calidad del código generado:
+      148 +**3.2** Test unitario mínimo
+      149 +- `scripts/central_command/tests/test_hardware_guard.py`
+      150 +- Mock `/api/ps` con 1 BALANCED activo, verificar que el guard lanza excepción
+      151 +  al intentar cargar otro BALANCED.
+      152 +- Verificar que FAST + FAST es permitido.
+      153 +- Verificar modo `warn`.
+      154
+       93 -PROMPT 1 (Script Python):
+       94 -  "Escribe una función Python llamada benchmark_ollama(model: str, prompt: str) -> dict
+       95 -   que: llame a http://localhost:11435/api/generate, mida la latencia,
+       96 -   retorne {'model': str, 'response': str, 'latency_ms': int, 'tokens': int}.
+       97 -   Solo el código, sin explicación."
+      155 +### Phase 4 — Documentation & Wire-up
+      156
+       99 -PROMPT 2 (Refactorización):
+      100 -  Lee el archivo: scripts/central_command/benchmark/run_suite.py líneas 1-60
+      101 -  "Refactoriza BENCHMARKS dict para que cada benchmark tenga:
+      102 -   {'prompt': str, 'expected_keywords': list[str], 'max_tokens': int}.
+      103 -   Mantén compatibilidad hacia atrás. Solo el código modificado."
+      157 +**4.1** Actualizar `AGENTS.md`
+      158 +- Agregar sección "## Hardware Profile & Model Tiers" que referencia
+      159 +  `data/orchestration/HARDWARE_PROFILE.md` como SSoT.
+      160 +- Tabla resumen: tier → modelos → casos de uso → límites VRAM.
+      161 +- Regla: "Al iniciar sesión, ejecutar `bash scripts/maintenance/ollama_bootstrap.sh`
+      162 +  si es primera vez o si `ollama list` no incluye el roster."
+      163
+      105 -CRITERIO DE EVALUACIÓN:
+      106 -  - ¿El código es sintácticamente correcto? (ejecutar: python3 -c "compile(...)")
+      107 -  - ¿Usa type hints?
+      108 -  - ¿Incluye manejo de errores básico?
+      164 +**4.2** Actualizar `data/orchestration/delegation_checker.sh` (existente)
+      165 +- Agregar subcomando `hw_check` que corre `ollama_bootstrap.sh --verify-only`
+      166 +  (sin pulls).
+      167
+      110 -GUARDA resultados en: data/agent-state/eval_qwen_coder_<timestamp>.json
+      111 -REPORTA: latencia, calidad del código (1-5), errores detectados.
+      112 -```
+      168 +**4.3** No-op / verificación
+      169 +- `CLAUDE.md` ya referencia `AGENTS.md` como SSoT — no requiere edits.
+      170
+      171  ---
+      172
+      116 -### TAREA C: Delegar a deepseek-v3.1 — Auditoría Lógica
+      117 -> Copiar como instrucción para otra sesión de Claude/Gemini:
+      173 +## Files to Modify / Create
+      174
+      119 -```
+      120 -CONTEXTO: Ollama activo en localhost:11435. Modelo: deepseek-v3.1:671b-cloud
+      175 +### Create
+      176 +- `data/orchestration/HARDWARE_PROFILE.md` (canonical reference, English)
+      177 +- `scripts/maintenance/ollama_bootstrap.sh` (idempotent installer + verifier)
+      178 +- `scripts/central_command/local_router/hardware_guard.py` (VRAM policy)
+      179 +- `scripts/central_command/tests/test_hardware_guard.py` (unit tests)
+      180
+      122 -NOTA: Este modelo es remoto (requiere conexión). Puede tener latencia alta (30-120s).
+      181 +### Modify
+      182 +- `scripts/central_command/config.py` (líneas 6-10 constantes + bloque nuevo tras 52)
+      183 +- `scripts/central_command/local_router/agents.yaml` (5 referencias de modelo + nuevo campo `hw_tier`)
+      184 +- `scripts/central_command/providers/ollama_provider.py` (línea 16, fallback port)
+      185 +- `scripts/central_command/local_router/registry.py` (línea 19, fallback port)
+      186 +- `scripts/central_command/local_router/executor.py` (1 línea nueva antes de línea 245, llamada al guard)
+      187 +- `AGENTS.md` (nueva sección hardware profile)
+      188 +- `data/orchestration/delegation_checker.sh` (subcomando hw_check)
+      189
+      124 -EJECUTA este prompt de auditoría:
+      190 +### NOT in scope (deferred)
+      191 +- Embedding provider (`ollama_embed_provider.py`) — modelos se instalan, pero
+      192 +  el wrapper HTTP para `/api/embeddings` se difiere hasta que exista un
+      193 +  consumidor concreto (RAG pipeline). Evitar código especulativo.
+      194 +- Kill de proceso `ollama serve` duplicado — requiere decisión del usuario
+      195 +  (ambas instancias apuntan al mismo puerto/models; conviene investigar
+      196 +  antes de matar).
+      197 +- Quantization enforcement runtime — el spec pide Q4_K_M default;
+      198 +  Ollama ya lo usa por defecto en los pulls del roster. No se requiere
+      199 +  código extra.
+      200 +- Caveman/concise output mode — es regla de prompting, no de código.
+      201 +  Se documenta en AGENTS.md pero no se implementa como middleware.
+      202
+      126 -PROMPT 1 (Auditoría de configuración):
+      127 -  Lee el archivo: scripts/central_command/config.py
+      128 -  "Audita este módulo de configuración. Identifica:
+      129 -   1. Variables críticas sin validación
+      130 -   2. Valores hardcodeados que deberían ser env vars
+      131 -   3. Inconsistencias de configuración
+      132 -   Formato: lista numerada, máximo 10 ítems."
+      133 -
+      134 -PROMPT 2 (Validación lógica):
+      135 -  "Dado este flujo de orquestación de agentes:
+      136 -   INTAKE → ANALYSIS → PLANNING → EXECUTION → VALIDATION → DELIVERY
+      137 -   Identifica: ¿qué pasa si VALIDATION falla? ¿Existe un mecanismo de rollback?
+      138 -   ¿Qué datos se pierden si el agente muere entre EXECUTION y VALIDATION?"
+      139 -
+      140 -GUARDA resultados en: data/agent-state/eval_deepseek_<timestamp>.json
+      141 -REPORTA: latencia total, profundidad del análisis (1-5), hallazgos críticos.
+      142 -```
+      143 -
+      203  ---
+      204
+      146 -## Fase 3 — Agregación (Claude orquestador ejecuta)
+      205 +## Verification Plan
+      206
+      148 -```python
+      149 -# Ejecutar: python3 scripts/aggregate_eval_results.py
+      150 -# (script a crear como parte de este plan)
+      207 +### Tests automatizados
+      208 +```bash
+      209 +# 1. Bootstrap idempotente
+      210 +bash scripts/maintenance/ollama_bootstrap.sh
+      211 +# expected: "✅ All required models installed" en segunda ejecución
+      212
+      152 -import json, glob, os
+      153 -from datetime import datetime
+      213 +# 2. Unit test del hardware guard
+      214 +cd scripts/central_command
+      215 +python3 -m pytest tests/test_hardware_guard.py -v
+      216
+      155 -results_dir = "data/agent-state"
+      156 -pattern = f"{results_dir}/eval_*.json"
+      217 +# 3. Regresión de router
+      218 +python3 -m pytest tests/test_local_router_integration.py -v
+      219 +python3 -m pytest tests/test_classifier_complexity.py -v
+      220
+      158 -report = {
+      159 -    "timestamp": datetime.now().isoformat(),
+      160 -    "models_evaluated": [],
+      161 -    "winner_by_category": {},
+      162 -    "observations": []
+      163 -}
+      164 -
+      165 -for f in glob.glob(pattern):
+      166 -    with open(f) as fp:
+      167 -        data = json.load(fp)
+      168 -        report["models_evaluated"].append(data)
+      169 -
+      170 -output_path = f"data/agent-state/EVAL_REPORT_{datetime.now().strftime('%Y%m%d_%H%M')}.json"
+      171 -with open(output_path, "w") as fp:
+      172 -    json.dump(report, fp, indent=2, ensure_ascii=False)
+      173 -
+      174 -print(f"Reporte generado: {output_path}")
+      221 +# 4. Provider sigue funcionando post-port-fix
+      222 +python3 -m pytest tests/test_ollama_provider.py -v
+      223  ```
+      224
+      177 ----
+      225 +### Validación end-to-end
+      226 +```bash
+      227 +# 5. Roster completo en Ollama
+      228 +curl -s http://localhost:11435/api/tags | python3 -c "
+      229 +import json, sys
+      230 +installed = {m['name'] for m in json.load(sys.stdin)['models']}
+      231 +required = {'llama3.1:8b','gemma2:9b','mistral:7b',
+      232 +            'deepseek-coder-v2:16b','qwen2.5-coder:14b','nomic-embed-text'}
+      233 +missing = required - installed
+      234 +print('MISSING:' if missing else '✅ ROSTER COMPLETE', missing)
+      235 +"
+      236
+      179 -## Tablero de Control (Central Command tracking)
+      237 +# 6. Classifier asigna correctamente por tier
+      238 +python3 -c "
+      239 +from scripts.central_command.local_router.classifier import Classifier
+      240 +c = Classifier()
+      241 +assert c.classify('refactor auth function').agent in ('coder','auditor')
+      242 +assert c.classify('explain this').agent in ('chat','reviewer')
+      243 +print('✅ Classification OK')
+      244 +"
+      245
+      181 -| Fase | Tarea | Agente Delegado | Estado | Output |
+      182 -|------|-------|-----------------|--------|--------|
+      183 -| 1 | Verificación entorno | Claude (directo) | ⬜ Pendiente | latencias ping |
+      184 -| 2A | Benchmark qwen3 | Claude/Gemini | ⬜ Pendiente | eval_qwen3_*.json |
+      185 -| 2B | Benchmark qwen2.5-coder | Claude/Gemini | ⬜ Pendiente | eval_qwen_coder_*.json |
+      186 -| 2C | Benchmark deepseek | Claude/Gemini | ⬜ Pendiente | eval_deepseek_*.json |
+      187 -| 3 | Agregación | Claude (directo) | ⬜ Pendiente | EVAL_REPORT_*.json |
+      246 +# 7. Hardware guard rechaza doble BALANCED
+      247 +python3 scripts/central_command/local_router/hardware_guard.py --selftest
+      248
+      189 -**Criterio de éxito global**: Los 3 modelos responden y se genera el reporte comparativo.
+      249 +# 8. Latencias por tier contra spec
+      250 +#    FAST (llama3.1:8b):         20–45 t/s
+      251 +#    BALANCED (deepseek-v2:16b): 5–10 t/s
+      252 +bash scripts/maintenance/ollama_bootstrap.sh --benchmark
+      253 +```
+      254
+      255 +### Criterio de éxito
+      256 +1. `ollama_bootstrap.sh` ejecuta sin error y deja los 6 modelos del roster
+      257 +   instalados en D:.
+      258 +2. Todos los tests existentes siguen pasando (`test_ollama_provider.py`,
+      259 +   `test_local_router_integration.py`).
+      260 +3. `hardware_guard` bloquea con excepción al intentar cargar 2 BALANCED.
+      261 +4. El classifier asigna tareas de código a un agente con
+      262 +   `model: deepseek-coder-v2:16b` y tareas de chat a `llama3.1:8b`.
+      263 +5. Los defaults de puerto en los dos providers son `11435`.
+      264 +
+      265  ---
+      266
+      193 -## Archivos Críticos
+      267 +## Critical Files Reference
+      268
+      195 -- `scripts/central_command/config.py` — OLLAMA_BASE_URL, timeouts, model constants
+      196 -- `scripts/central_command/providers/ollama_provider.py` — cliente HTTP a Ollama
+      197 -- `scripts/central_command/benchmark/run_suite.py` — benchmarks existentes (reusar prompts)
+      198 -- `data/agent-state/` — directorio de resultados JSON
+      269 +| Archivo | Rol | Edit |
+      270 +|---|---|---|
+      271 +| `scripts/central_command/config.py` | Constantes de modelo y endpoints | líneas 6-10, +bloque tras 52 |
+      272 +| `scripts/central_command/local_router/agents.yaml` | SSoT de agentes | 5 modelos + nuevo campo `hw_tier` |
+      273 +| `scripts/central_command/local_router/executor.py` | Instancia providers | +1 línea antes de 245 |
+      274 +| `scripts/central_command/providers/ollama_provider.py` | HTTP client | línea 16 |
+      275 +| `scripts/central_command/local_router/registry.py` | Health check | línea 19 |
+      276 +| `AGENTS.md` | Protocolo del Central Command | +sección hardware |
+      277
+      200 -## Nota Técnica
+      278 +## Risk Notes
+      279
+      202 -`ollama_provider.py` usa `getattr(config, "OLLAMA_BASE_URL", "http://localhost:11434")`.
+      203 -Como `config.OLLAMA_BASE_URL` está definido como 11435, el puerto correcto se propaga
+      204 -automáticamente. No hay acción requerida.
+      280 +- **Descarga grande (~25 GB).** `ollama_bootstrap.sh` debe ser interruptible;
+      281 +  cada `ollama pull` es resumible nativamente.
+      282 +- **Doble proceso Ollama.** No matarlo en este plan — solo detectar y avisar.
+      283 +  Si ambos apuntan al mismo socket hay contienda; el usuario decide resolver.
+      284 +- **Rompimiento de tests legacy.** Hay tests en
+      285 +  `scripts/central_command/tests/` que referencian `qwen2.5-coder:7b`. Al
+      286 +  cambiar a `:16b` podrían fallar. Verificar y actualizar en Phase 2.
+      287 +- **`ollama ps` semantics.** El endpoint `/api/ps` no está documentado en todas
+      288 +  las versiones. El guard hace fallback graceful (log + permit) si el endpoint
+      289 +  retorna 404.

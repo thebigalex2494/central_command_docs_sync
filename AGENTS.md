@@ -9,7 +9,7 @@ Path standardization for portability and consistency:
 | Variable | Value | Purpose |
 |----------|-------|-----------|
 | `%DRIVE%` | `I:\Mi unidad` | **REFERENCE ONLY** — Stable Google Drive mirror (SSoT for releases) |
-| `%CC%` | `%CC%` | **PRIMARY WORKSPACE** — Local-First active execution & data |
+| `%CC%` | `C:\Users\msi\central_command` | **PRIMARY WORKSPACE** — Local-First active execution & data |
 
 ### Hybrid Execution (WSL ↔ Windows)
 
@@ -48,44 +48,44 @@ To maintain a secure and identified connection across devices, Central Command u
 3.  **Identification**: Devices are identified via their Tailscale IP or MagicDNS name.
 4.  **Security**: Handshakes use Tailscale SSH. No manual authorized_keys management is required for internal mesh access.
 
-## Model Expertise Matrix (Unified v4)
+## Model Expertise Matrix (Unified v4.7)
 
-> **SSoT**: `scripts\central_command\local_router\agents.yaml`. This table is a quick reference.
+> **SSoT**: `docs/CENTRAL_COMMAND_ORCHESTRATION_PROMPT_v4.7.md`. This table is a quick reference.
 
-| Domain | Recommended | Fallback | Cost |
+| Layer | Recommended (Main) | Fallback | Engine |
 |:---|:---|:---|:---|
-| **Complex Orchestration** | Claude Opus 4.7 (Thinking enabled) | — | Included Max |
-| **Architecture / Planning** | Claude Opus 4.7 | groq_reasoner (70B) | Included Max / $0 |
-| **Implementation / Coding** | Claude Sonnet 4.6 (Thinking enabled) | Claude Opus 4.7 | Included Max |
-| **Review / Documentation** | Claude Haiku 4.5 | Claude Sonnet 4.6 | Included Max |
-| **Python ETL / Pandas** | DeepSeek Coder v2 (16B) | Qwen 2.5 Coder | **$0 local** |
-| **Logic / Auditing** | DeepSeek Coder v2 | Claude step-by-step | **$0 local** |
-| **Research (web)** | Perplexity sonar-pro | Claude/Gemini + search | Included Pro |
-| **Research (deep)** | Perplexity sonar-deep | — | Included Pro |
-| **Large codebase analysis** | Gemini 2.5 Pro (1M ctx) | Claude + subagents | Included Student |
-| **Extensive documentation** | Gemini 2.5 Pro | Claude + subagents | Included Student |
-| **Multi-file refactoring** | Gemini 2.5 Pro | Claude + subagents | Included Student |
-| **File editing / Filesystem** | Claude Code | — | Included Max |
-| **Browser Automation** | Tier 1→2→3→4 | Claude + Playwright MCP | $0→$0→$$→$$ |
-| **AppSheet / GAS** | Claude (Playwright MCP) | — | Included Max |
-| **HTML / CSS (Email)** | Claude (Sonnet 4.6) | — | Included Max |
-| **Classification / Indexing** | Ollama llama3.1 (8B) | Claude Haiku | **$0 local** |
-| **Docs / Tests / Low-risk** | Ollama (janitor) | Claude Haiku | **$0 local** |
+| **Orchestration (T1)** | **Claude 5.0 Opus / Gemini 3.1 Pro** | GPT-5.5 (Frontier) | Claude / Gemini |
+| **Architecture (T1)** | **Claude 4.5 Opus** | GPT-5.3-Codex | Claude |
+| **Implementation (T1)**| **Claude Code / Codex gpt-5.5** | GPT-5.4 | CLI Agent |
+| **Logic Auditor (T2)** | **Claude 4.5 Sonnet** | DeepSeek-R1 (32B) | Claude / Ollama |
+| **Local Executor (T1)**| **qwen2.5-coder:32b** | deepseek-coder-v2:16b | Ollama |
+| **Local Tool User** | **qwen3:latest** | qwen2.5-coder:latest | Ollama |
+| **Free Cloud** | **Groq llama-3.3-70b** | OpenRouter Free Models | Groq / OpenRouter |
+| **Research Node 1** | **Perplexity (Sonnet 4.6)** | Perplexity Pro Fallback | MCP/Playwright |
+| **Research Node 2** | **DeepSeek Web** | — | MCP/Playwright |
 
-### Local Agents ($0)
+### Playwright Model Hierarchy (Local-First Tiering)
+To optimize DOM reasoning and selector stability, local agents MUST follow this assignment:
+- **Tier 1 (Scripting/Selectors)**: `qwen2.5-coder:32b` / `deepseek-coder-v2:16b`.
+- **Tier 2 (Orchestration/Retries)**: `mistral-nemo:12b` / `llama3.1:8b`.
+- **Tier 3 (Fast Validation)**: `llama3.2:3b` / `gemma2:9b`.
+
+### Local & Special Agents ($0 / Hybrid)
 
 | Agent | Role | Invocation | Model |
 |-------|------|------------|-------|
-| **tools_coder** | Structured tool-use, JSONL editing | `ollama run qwen3` | qwen3:latest |
-| **coder** | Python ETL, pandas, precise coding | `ollama run deepseek-coder-v2` | deepseek-coder-v2:16b |
-| **auditor** | Logic audit, security review | `ollama run deepseek-coder-v2` | deepseek-coder-v2:16b |
-| **chat** | Fast general chat, classification | `ollama run llama3.1` | llama3.1:8b |
+| **architect** | High-level system design | `claude-4.5-opus` | Claude 4.5 Opus |
+| **fs_agent** | Filesystem & Git master | `claude code` | Claude Code CLI |
+| **auditor** | Precision logic & QA | `claude-4.5-sonnet` | Claude 4.5 Sonnet |
+| **Codex** | Lead Planner (Phase 2) | `gpt-5.3-codex` | GPT-5.3-Codex |
+| **logic_expert** | Chain-of-thought logic | `ollama run deepseek-r1:32b` | DeepSeek-R1 (32B) |
+| **survival_agent** | Tactical code fix | `gh copilot suggest` | Copilot CLI |
 
 ### Routing Rules
 
 > **Implemented**: `scripts\central_command\local_router\` — deterministic-first classification.
 
-4 phases: **Tool fast-path** → **Keyword scoring** (prefer $0 tier) → **LLM brain** (llama3.1, cached) → **Fallback** (DeepSeek Coder v2).
+4 phases: **Tool fast-path** → **Keyword scoring** (prefer $0 tier) → **LLM brain** (llama3.1, cached) → **Fallback** (DeepSeek-R1:8B).
 
 ## Orchestration Flow (6 Phases — Refined v5 · T1-T4)
 
@@ -99,7 +99,7 @@ To maintain a secure and identified connection across devices, Central Command u
 |-------|------|-------------|-------|
 | 1 | **INTAKE** | Intent classification, context filtering, mode routing, dynamic skill loading | **Gemini** (Orchestrator) |
 | 2 | **PLAN** | Task decomposition, subtask graph, model assignment | **Codex** (Planner) / **groq_reasoner** (Free-tier Fallback) |
-| 3 | **EXECUTE** | Parallel execution via local dispatcher (MAX_STEPS=10) | **Qwen 2.5 Coder / DeepSeek Coder v2** (Executor) |
+| 3 | **EXECUTE** | Parallel execution via local dispatcher (MAX_STEPS=10) | **Qwen 3 Coder (7B) / DeepSeek-R1 (8B)** (Executor) |
 | 4 | **VALIDATE** | Deterministic checks → logic audit → QA | **Claude** (Auditor) |
 | 5 | **AGGREGATE** | Synthesis → executive summary → Español MX output | **Claude** (Auditor) |
 | 6 | **HANDOFF** | Structured contracts, audit trail, TEP generation | **Claude** (Auditor) + TEP-v1 |

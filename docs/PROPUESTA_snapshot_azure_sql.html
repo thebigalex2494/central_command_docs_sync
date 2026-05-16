@@ -1,0 +1,952 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Propuesta Técnica — Snapshot Periódico de Azure SQL a Servidor Local</title>
+    <style>
+        /* ============================================================
+           RESET & BASE
+           ============================================================ */
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --color-text: #1a1a1a;
+            --color-text-secondary: #4a4a4a;
+            --color-border: #cccccc;
+            --color-bg: #ffffff;
+            --color-accent: #1a365d;
+            --color-accent-light: #2b6cb0;
+            --color-row-alt: #f7f7f7;
+            --font-body: 'Georgia', 'Times New Roman', serif;
+            --font-mono: 'Consolas', 'Courier New', monospace;
+            --font-heading: 'Georgia', 'Times New Roman', serif;
+        }
+
+        @page {
+            size: letter;
+            margin: 2.5cm 2.5cm 3cm 2.5cm;
+            @bottom-center {
+                content: counter(page);
+                font-family: var(--font-body);
+                font-size: 10pt;
+                color: #666;
+            }
+        }
+
+        body {
+            font-family: var(--font-body);
+            font-size: 12pt;
+            line-height: 1.7;
+            color: var(--color-text);
+            background: var(--color-bg);
+            max-width: 21cm;
+            margin: 0 auto;
+            padding: 2cm;
+        }
+
+        /* ============================================================
+           PRINT
+           ============================================================ */
+        @media print {
+            body { padding: 0; max-width: none; font-size: 11pt; }
+            .no-print { display: none !important; }
+            .page-break { page-break-before: always; }
+            h1, h2, h3 { page-break-after: avoid; }
+            table, figure, pre { page-break-inside: avoid; }
+            a { color: var(--color-text) !important; text-decoration: none !important; }
+            .cover-page { page-break-after: always; }
+            .toc-page { page-break-after: always; }
+        }
+
+        /* ============================================================
+           COVER PAGE
+           ============================================================ */
+        .cover-page {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 85vh;
+            text-align: center;
+            border-bottom: none;
+            padding-bottom: 4cm;
+        }
+
+        .cover-page .org-line {
+            font-size: 11pt;
+            letter-spacing: 3pt;
+            text-transform: uppercase;
+            color: var(--color-text-secondary);
+            margin-bottom: 1cm;
+        }
+
+        .cover-page .doc-type {
+            font-size: 13pt;
+            letter-spacing: 2pt;
+            text-transform: uppercase;
+            color: var(--color-accent);
+            margin-bottom: 1.5cm;
+            border-top: 2px solid var(--color-accent);
+            border-bottom: 2px solid var(--color-accent);
+            padding: 0.3cm 1cm;
+        }
+
+        .cover-page h1 {
+            font-size: 22pt;
+            font-weight: normal;
+            line-height: 1.3;
+            margin-bottom: 0.8cm;
+            color: var(--color-text);
+            border: none;
+            padding: 0;
+        }
+
+        .cover-page .subtitle {
+            font-size: 13pt;
+            font-style: italic;
+            color: var(--color-text-secondary);
+            margin-bottom: 2.5cm;
+            max-width: 14cm;
+        }
+
+        .cover-meta {
+            font-size: 11pt;
+            line-height: 2;
+            color: var(--color-text-secondary);
+        }
+
+        .cover-meta strong {
+            color: var(--color-text);
+        }
+
+        /* ============================================================
+           TABLE OF CONTENTS
+           ============================================================ */
+        .toc-page h2 {
+            font-size: 16pt;
+            text-align: center;
+            margin-bottom: 1cm;
+            border: none;
+            padding: 0;
+        }
+
+        .toc-page ol {
+            list-style: none;
+            counter-reset: toc-counter;
+        }
+
+        .toc-page > ol > li {
+            counter-increment: toc-counter;
+            margin-bottom: 0.3cm;
+            border-bottom: 1px dotted var(--color-border);
+            padding-bottom: 0.15cm;
+        }
+
+        .toc-page > ol > li::before {
+            content: counter(toc-counter) ". ";
+            font-weight: bold;
+            color: var(--color-accent);
+        }
+
+        .toc-page a {
+            color: var(--color-text);
+            text-decoration: none;
+        }
+
+        .toc-page ol ol {
+            margin-left: 1.5cm;
+            margin-top: 0.15cm;
+            counter-reset: toc-sub;
+        }
+
+        .toc-page ol ol li {
+            counter-increment: toc-sub;
+            margin-bottom: 0.1cm;
+            font-size: 11pt;
+        }
+
+        .toc-page ol ol li::before {
+            content: counter(toc-counter) "." counter(toc-sub) " ";
+            color: var(--color-text-secondary);
+        }
+
+        /* ============================================================
+           HEADINGS
+           ============================================================ */
+        h1 {
+            font-family: var(--font-heading);
+            font-size: 18pt;
+            font-weight: bold;
+            color: var(--color-accent);
+            margin: 1.2cm 0 0.5cm 0;
+            padding-bottom: 0.2cm;
+            border-bottom: 1.5px solid var(--color-accent);
+            counter-increment: h1-counter;
+            counter-reset: h2-counter h3-counter;
+        }
+
+        h1::before {
+            content: counter(h1-counter) ". ";
+        }
+
+        h1.no-number::before { content: none; }
+
+        h2 {
+            font-family: var(--font-heading);
+            font-size: 14pt;
+            font-weight: bold;
+            color: var(--color-text);
+            margin: 0.8cm 0 0.3cm 0;
+            counter-increment: h2-counter;
+            counter-reset: h3-counter;
+        }
+
+        h2::before {
+            content: counter(h1-counter) "." counter(h2-counter) " ";
+            color: var(--color-accent);
+        }
+
+        h2.no-number::before { content: none; }
+
+        h3 {
+            font-family: var(--font-heading);
+            font-size: 12pt;
+            font-weight: bold;
+            color: var(--color-text-secondary);
+            margin: 0.5cm 0 0.2cm 0;
+            counter-increment: h3-counter;
+        }
+
+        h3::before {
+            content: counter(h1-counter) "." counter(h2-counter) "." counter(h3-counter) " ";
+            color: var(--color-accent-light);
+        }
+
+        h3.no-number::before { content: none; }
+
+        body { counter-reset: h1-counter; }
+
+        /* ============================================================
+           TEXT ELEMENTS
+           ============================================================ */
+        p { margin-bottom: 0.4cm; text-align: justify; }
+
+        blockquote {
+            margin: 0.5cm 0 0.5cm 0.8cm;
+            padding: 0.3cm 0.5cm;
+            border-left: 3px solid var(--color-accent);
+            background: #fafafa;
+            font-style: italic;
+            color: var(--color-text-secondary);
+        }
+
+        ul, ol { margin: 0.3cm 0 0.4cm 1.2cm; }
+        li { margin-bottom: 0.15cm; }
+
+        strong { font-weight: bold; }
+        em { font-style: italic; }
+
+        code {
+            font-family: var(--font-mono);
+            font-size: 10pt;
+            background: #f0f0f0;
+            padding: 1px 4px;
+            border-radius: 2px;
+        }
+
+        pre {
+            font-family: var(--font-mono);
+            font-size: 9pt;
+            line-height: 1.5;
+            background: #f5f5f5;
+            border: 1px solid #e0e0e0;
+            border-left: 3px solid var(--color-accent);
+            padding: 0.4cm;
+            margin: 0.3cm 0 0.5cm 0;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        /* ============================================================
+           TABLES
+           ============================================================ */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 0.4cm 0 0.6cm 0;
+            font-size: 10.5pt;
+        }
+
+        thead th {
+            background: var(--color-accent);
+            color: white;
+            font-weight: bold;
+            text-align: left;
+            padding: 0.2cm 0.3cm;
+            font-size: 10pt;
+        }
+
+        tbody td {
+            padding: 0.15cm 0.3cm;
+            border-bottom: 1px solid #e0e0e0;
+            vertical-align: top;
+        }
+
+        tbody tr:nth-child(even) { background: var(--color-row-alt); }
+        tbody tr:hover { background: #eef2f7; }
+
+        caption {
+            font-size: 10pt;
+            font-style: italic;
+            color: var(--color-text-secondary);
+            margin-bottom: 0.2cm;
+            text-align: left;
+        }
+
+        /* ============================================================
+           FIGURES & DIAGRAMS
+           ============================================================ */
+        .diagram {
+            font-family: var(--font-mono);
+            font-size: 9pt;
+            line-height: 1.4;
+            background: #fafafa;
+            border: 1px solid #ddd;
+            padding: 0.5cm;
+            margin: 0.4cm 0;
+            overflow-x: auto;
+            white-space: pre;
+        }
+
+        .figure-caption {
+            font-size: 10pt;
+            font-style: italic;
+            text-align: center;
+            color: var(--color-text-secondary);
+            margin: 0.2cm 0 0.5cm 0;
+        }
+
+        /* ============================================================
+           SPECIAL BLOCKS
+           ============================================================ */
+        .nota {
+            background: #fffbeb;
+            border-left: 3px solid #d69e2e;
+            padding: 0.3cm 0.5cm;
+            margin: 0.4cm 0;
+            font-size: 11pt;
+        }
+
+        .nota::before {
+            content: "Nota: ";
+            font-weight: bold;
+            color: #975a16;
+        }
+
+        .importante {
+            background: #fff5f5;
+            border-left: 3px solid #c53030;
+            padding: 0.3cm 0.5cm;
+            margin: 0.4cm 0;
+            font-size: 11pt;
+        }
+
+        .importante::before {
+            content: "Importante: ";
+            font-weight: bold;
+            color: #c53030;
+        }
+
+        .checklist {
+            list-style: none;
+            margin-left: 0.5cm;
+        }
+
+        .checklist li::before {
+            content: "\2610  ";
+            font-size: 12pt;
+        }
+
+        /* ============================================================
+           FOOTER / HEADER
+           ============================================================ */
+        .doc-footer {
+            margin-top: 1.5cm;
+            padding-top: 0.3cm;
+            border-top: 1px solid var(--color-border);
+            font-size: 9pt;
+            color: #999;
+            text-align: center;
+        }
+
+        /* Utility */
+        .text-center { text-align: center; }
+        .text-right { text-align: right; }
+        .mt-1 { margin-top: 0.5cm; }
+        .mb-1 { margin-bottom: 0.5cm; }
+        .indent { margin-left: 1cm; }
+    </style>
+</head>
+<body>
+
+<!-- ================================================================
+     COVER PAGE
+     ================================================================ -->
+<div class="cover-page">
+    <div class="org-line">[Nombre de la Organizaci&oacute;n]</div>
+    <div class="doc-type">Propuesta T&eacute;cnica</div>
+    <h1 class="no-number" style="border:none;">Snapshot Peri&oacute;dico de Base de Datos Azure SQL a Servidor Local</h1>
+    <div class="subtitle">
+        Estrategia para retomar el control aut&oacute;nomo de los datos de producci&oacute;n alojados en Azure SQL Database, mediante la generaci&oacute;n automatizada de copias locales para la explotaci&oacute;n libre de informaci&oacute;n y proyectos de impacto.
+    </div>
+    <div class="cover-meta">
+        <strong>Fecha:</strong> Febrero 2026<br>
+        <strong>Versi&oacute;n:</strong> 1.0<br>
+        <strong>Estado:</strong> Investigaci&oacute;n completada &mdash; Pendiente implementaci&oacute;n<br>
+        <strong>Clasificaci&oacute;n:</strong> Uso interno<br>
+        <strong>Elabor&oacute;:</strong> [Autor]<br>
+    </div>
+</div>
+
+<!-- ================================================================
+     TABLE OF CONTENTS
+     ================================================================ -->
+<div class="toc-page page-break">
+    <h2 class="no-number" style="border:none;">&Iacute;ndice</h2>
+    <ol>
+        <li><a href="#sec1">Introducci&oacute;n</a>
+            <ol>
+                <li><a href="#sec1-1">Situaci&oacute;n actual</a></li>
+                <li><a href="#sec1-2">Planteamiento del problema</a></li>
+                <li><a href="#sec1-3">Justificaci&oacute;n</a></li>
+            </ol>
+        </li>
+        <li><a href="#sec2">Objetivos</a>
+            <ol>
+                <li><a href="#sec2-1">Objetivo general</a></li>
+                <li><a href="#sec2-2">Objetivos espec&iacute;ficos</a></li>
+                <li><a href="#sec2-3">Diagrama de dependencias</a></li>
+            </ol>
+        </li>
+        <li><a href="#sec3">An&aacute;lisis de escenarios de acceso</a>
+            <ol>
+                <li><a href="#sec3-1">Escenario A: Credenciales SQL de solo lectura</a></li>
+                <li><a href="#sec3-2">Escenario B: Connection string limitada</a></li>
+                <li><a href="#sec3-3">Escenario C: Archivos de export del proveedor</a></li>
+                <li><a href="#sec3-4">Escenario D: Acceso exclusivo v&iacute;a API</a></li>
+                <li><a href="#sec3-5">Matriz comparativa</a></li>
+            </ol>
+        </li>
+        <li><a href="#sec4">Arquitectura t&eacute;cnica propuesta</a>
+            <ol>
+                <li><a href="#sec4-1">Diagrama de arquitectura</a></li>
+                <li><a href="#sec4-2">Flujo de datos por ejecuci&oacute;n</a></li>
+            </ol>
+        </li>
+        <li><a href="#sec5">Herramientas y requerimientos de infraestructura</a></li>
+        <li><a href="#sec6">M&eacute;todos de exportaci&oacute;n</a>
+            <ol>
+                <li><a href="#sec6-1">M&eacute;todo BACPAC</a></li>
+                <li><a href="#sec6-2">M&eacute;todo BCP por tablas</a></li>
+                <li><a href="#sec6-3">M&eacute;todo DuckDB directo a Parquet</a></li>
+            </ol>
+        </li>
+        <li><a href="#sec7">Motor de consulta local</a></li>
+        <li><a href="#sec8">Seguridad y manejo de credenciales</a></li>
+        <li><a href="#sec9">Automatizaci&oacute;n y pol&iacute;tica de retenci&oacute;n</a></li>
+        <li><a href="#sec10">Validaci&oacute;n y criterios de aceptaci&oacute;n</a></li>
+        <li><a href="#sec11">Plan de implementaci&oacute;n por fases</a></li>
+        <li><a href="#sec12">Consideraciones legales, t&eacute;cnicas y de continuidad</a></li>
+        <li><a href="#sec13">Referencias</a></li>
+    </ol>
+</div>
+
+<!-- ================================================================
+     1. INTRODUCTION
+     ================================================================ -->
+<h1 id="sec1" class="page-break">Introducci&oacute;n</h1>
+
+<h2 id="sec1-1">Situaci&oacute;n actual</h2>
+<p>La base de datos de producci&oacute;n de la organizaci&oacute;n se encuentra alojada en <strong>Microsoft Azure SQL Database</strong> (plataforma como servicio), bajo la administraci&oacute;n y gesti&oacute;n de un proveedor externo de servicios tecnol&oacute;gicos.</p>
+
+<p>Si bien el proveedor entrega los datos cuando se solicitan, <strong>no otorga acceso directo</strong> a la infraestructura de Azure. Esto significa que la organizaci&oacute;n no dispone de:</p>
+<ul>
+    <li>Acceso al portal de Azure para administrar la base de datos.</li>
+    <li>Credenciales de conexi&oacute;n directa al servidor SQL.</li>
+    <li>Capacidad aut&oacute;noma para ejecutar consultas sobre los datos en tiempo real.</li>
+    <li>Un respaldo propio e independiente de la informaci&oacute;n.</li>
+</ul>
+
+<h2 id="sec1-2">Planteamiento del problema</h2>
+<p>La ausencia de acceso aut&oacute;nomo a los datos de producci&oacute;n genera las siguientes limitaciones operativas:</p>
+<ol>
+    <li><strong>Dependencia total del proveedor</strong> para cualquier consulta, reporte o extracci&oacute;n de informaci&oacute;n.</li>
+    <li><strong>Imposibilidad de generar reportes ad-hoc</strong> que crucen informaci&oacute;n entre m&uacute;ltiples cat&aacute;logos de la base de datos.</li>
+    <li><strong>Incapacidad de alimentar proyectos internos</strong> de automatizaci&oacute;n, anal&iacute;tica de datos o inteligencia artificial con datos frescos y completos.</li>
+    <li><strong>Ausencia de un respaldo independiente</strong>, lo que representa un riesgo para la continuidad del negocio en caso de que el proveedor falle o la relaci&oacute;n comercial termine.</li>
+    <li><strong>Tiempos de respuesta inaceptables</strong>: cada solicitud de datos al proveedor implica comunicaci&oacute;n, espera y procesamiento manual.</li>
+</ol>
+
+<h2 id="sec1-3">Justificaci&oacute;n</h2>
+<p>Los datos generados en la operaci&oacute;n del negocio son propiedad de la organizaci&oacute;n. Retomar el <strong>control aut&oacute;nomo sobre estos datos</strong> no es solamente una mejora operativa, sino una necesidad estrat&eacute;gica que habilita:</p>
+<ul>
+    <li><strong>Generaci&oacute;n de reportes automatizados</strong> entre cat&aacute;logos sin intervenci&oacute;n del proveedor.</li>
+    <li><strong>An&aacute;lisis de datos con herramientas propias</strong> (Python, DuckDB, Power BI, Excel).</li>
+    <li><strong>Proyectos de alto impacto</strong> que requieran acceso libre, frecuente y programable a la informaci&oacute;n.</li>
+    <li><strong>Respaldo independiente</strong> como estrategia de continuidad de negocio.</li>
+    <li><strong>Reducci&oacute;n de tiempos</strong> de obtenci&oacute;n de informaci&oacute;n de d&iacute;as/horas a minutos.</li>
+</ul>
+
+<!-- ================================================================
+     2. OBJECTIVES
+     ================================================================ -->
+<h1 id="sec2" class="page-break">Objetivos</h1>
+
+<h2 id="sec2-1">Objetivo general</h2>
+<p>Establecer un <strong>proceso automatizado</strong> que genere y descargue peri&oacute;dicamente un snapshot de la base de datos Azure SQL a un servidor local, creando una copia consultable e independiente que permita la generaci&oacute;n de reportes, an&aacute;lisis cruzado entre cat&aacute;logos y alimentaci&oacute;n de proyectos de impacto, sin depender del proveedor para el acceso a los datos.</p>
+
+<h2 id="sec2-2">Objetivos espec&iacute;ficos</h2>
+<table>
+    <thead>
+        <tr><th>#</th><th>Objetivo espec&iacute;fico</th><th>Entregable</th><th>Depende de</th></tr>
+    </thead>
+    <tbody>
+        <tr><td><strong>OE-1</strong></td><td>Obtener credenciales o mecanismo de acceso de lectura a la base Azure SQL.</td><td>Credenciales SQL o connection string validados</td><td>Negociaci&oacute;n con proveedor</td></tr>
+        <tr><td><strong>OE-2</strong></td><td>Instalar y configurar las herramientas CLI necesarias en el servidor local.</td><td>Herramientas verificadas: <code>sqlpackage</code>, <code>bcp</code>, <code>sqlcmd</code>, <code>DuckDB</code></td><td>OE-1</td></tr>
+        <tr><td><strong>OE-3</strong></td><td>Validar conectividad remota desde el servidor local hacia Azure SQL.</td><td>Prueba de conexi&oacute;n exitosa documentada</td><td>OE-1, OE-2</td></tr>
+        <tr><td><strong>OE-4</strong></td><td>Dise&ntilde;ar el esquema de snapshot (completo vs. por cat&aacute;logos).</td><td>Matriz de tablas a exportar con frecuencia y m&eacute;todo</td><td>OE-3</td></tr>
+        <tr><td><strong>OE-5</strong></td><td>Implementar el script de exportaci&oacute;n automatizada.</td><td>Script PowerShell funcional con logging y retry</td><td>OE-4</td></tr>
+        <tr><td><strong>OE-6</strong></td><td>Configurar la restauraci&oacute;n/importaci&oacute;n local del snapshot.</td><td>Base de datos local consultable (SQL Express o DuckDB)</td><td>OE-5</td></tr>
+        <tr><td><strong>OE-7</strong></td><td>Automatizar la ejecuci&oacute;n peri&oacute;dica del proceso.</td><td>Task Scheduler configurado</td><td>OE-5, OE-6</td></tr>
+        <tr><td><strong>OE-8</strong></td><td>Establecer pol&iacute;tica de retenci&oacute;n y limpieza de snapshots.</td><td>Retenci&oacute;n definida y limpieza autom&aacute;tica operando</td><td>OE-7</td></tr>
+        <tr><td><strong>OE-9</strong></td><td>Validar el pipeline completo end-to-end.</td><td>Reporte generado desde snapshot local que coincida con datos en Azure</td><td>OE-6</td></tr>
+    </tbody>
+</table>
+
+<h2 id="sec2-3">Diagrama de dependencias</h2>
+<div class="diagram">OE-1 Obtener credenciales del proveedor
+  |
+  +---> OE-2 Instalar herramientas CLI
+  |       |
+  |       +---> OE-3 Validar conectividad
+  |               |
+  |               +---> OE-4 Dise&ntilde;ar esquema de snapshot
+  |                       |
+  |                       +---> OE-5 Script de exportaci&oacute;n
+  |                               |
+  |                               +---> OE-6 Import local ----> OE-9 Validaci&oacute;n E2E
+  |                               |
+  |                               +---> OE-7 Automatizaci&oacute;n ---> OE-8 Retenci&oacute;n
+  |
+  +---> OE-3 (dependencia directa)</div>
+<div class="figure-caption">Figura 1. Dependencias entre objetivos espec&iacute;ficos.</div>
+
+<!-- ================================================================
+     3. ACCESS SCENARIOS
+     ================================================================ -->
+<h1 id="sec3" class="page-break">An&aacute;lisis de escenarios de acceso</h1>
+
+<p>La estrategia t&eacute;cnica a implementar depende directamente del nivel de acceso que el proveedor est&eacute; dispuesto a otorgar. Se han identificado cuatro escenarios posibles, ordenados del m&aacute;s favorable al menos favorable.</p>
+
+<h2 id="sec3-1">Escenario A: Credenciales SQL de solo lectura</h2>
+<p><strong>Clasificaci&oacute;n: Escenario ideal.</strong></p>
+<p>Se solicita al proveedor un usuario SQL con permisos exclusivos de lectura (<code>db_datareader</code>), el endpoint del servidor y la apertura de firewall para la IP del servidor local.</p>
+<p>Este escenario habilita el uso de todas las herramientas de exportaci&oacute;n disponibles (<code>sqlpackage</code>, <code>bcp</code>, <code>sqlcmd</code>, DuckDB), permite la generaci&oacute;n de snapshots completos o selectivos, y ofrece la m&aacute;xima flexibilidad para automatizaci&oacute;n.</p>
+
+<blockquote>
+    <strong>Modelo de solicitud al proveedor:</strong> &laquo;Requerimos un usuario SQL de solo lectura (<code>db_datareader</code>) en la base de datos [NOMBRE_DB] alojada en Azure SQL, junto con el endpoint del servidor y la apertura de firewall para nuestra IP [IP_SERVIDOR]. El usuario ser&aacute; utilizado exclusivamente para consultas de lectura y generaci&oacute;n de respaldos peri&oacute;dicos de nuestros propios datos.&raquo;
+</blockquote>
+
+<h2 id="sec3-2">Escenario B: Connection string limitada</h2>
+<p>El proveedor proporciona una cadena de conexi&oacute;n con acceso restringido a vistas espec&iacute;ficas o un subconjunto de esquemas, sin acceso a la totalidad de las tablas.</p>
+<p>Permite la exportaci&oacute;n de las vistas y tablas autorizadas, generando un snapshot parcial pero funcional. Requiere mapear las vistas disponibles y adaptar los scripts de exportaci&oacute;n.</p>
+
+<h2 id="sec3-3">Escenario C: Archivos de export del proveedor</h2>
+<p>El proveedor no otorga acceso directo pero se compromete a entregar peri&oacute;dicamente archivos de exportaci&oacute;n (BACPAC o CSV) depositados en un contenedor de Azure Blob Storage o v&iacute;a carpeta compartida.</p>
+<p>Funcional pero parcialmente dependiente: la frescura de los datos queda sujeta a la frecuencia de entrega del proveedor.</p>
+
+<h2 id="sec3-4">Escenario D: Acceso exclusivo v&iacute;a API</h2>
+<p><strong>Clasificaci&oacute;n: Escenario menos deseable.</strong></p>
+<p>No existe acceso SQL. Los datos solo pueden extraerse a trav&eacute;s de la API REST de la aplicaci&oacute;n del proveedor, endpoint por endpoint, con paginaci&oacute;n y l&iacute;mites de tasa.</p>
+<p>Es viable pero implica un esfuerzo de implementaci&oacute;n significativamente mayor. La prioridad debe ser negociar al menos el Escenario B.</p>
+
+<h2 id="sec3-5">Matriz comparativa</h2>
+<table>
+    <thead>
+        <tr><th>Criterio</th><th>Escenario A</th><th>Escenario B</th><th>Escenario C</th><th>Escenario D</th></tr>
+    </thead>
+    <tbody>
+        <tr><td>Completitud de datos</td><td>Total</td><td>Parcial</td><td>Total*</td><td>Parcial</td></tr>
+        <tr><td>Automatizaci&oacute;n aut&oacute;noma</td><td>S&iacute;</td><td>S&iacute;</td><td>Parcial</td><td>S&iacute; (complejo)</td></tr>
+        <tr><td>Frescura de datos</td><td>Tiempo real</td><td>Tiempo real</td><td>Seg&uacute;n proveedor</td><td>Tiempo real</td></tr>
+        <tr><td>Esfuerzo de implementaci&oacute;n</td><td>Bajo</td><td>Bajo-Medio</td><td>Medio</td><td>Alto</td></tr>
+        <tr><td>Dependencia residual</td><td>Solo firewall</td><td>Configura vistas</td><td>Genera exports</td><td>Mantiene API</td></tr>
+        <tr><td>Costo adicional Azure</td><td>$0</td><td>$0</td><td>Almacenamiento</td><td>$0</td></tr>
+    </tbody>
+</table>
+<div class="figure-caption">Tabla 1. Comparativa de escenarios de acceso. *Si el proveedor entrega export completo.</div>
+
+<!-- ================================================================
+     4. ARCHITECTURE
+     ================================================================ -->
+<h1 id="sec4" class="page-break">Arquitectura t&eacute;cnica propuesta</h1>
+
+<h2 id="sec4-1">Diagrama de arquitectura</h2>
+<p>La siguiente arquitectura corresponde al Escenario A (acceso SQL directo), que es el escenario objetivo a negociar. Los escenarios B, C y D utilizan la misma infraestructura local, variando &uacute;nicamente el m&eacute;todo de obtenci&oacute;n de datos.</p>
+
+<div class="diagram">+================================================================+
+|                    AZURE (Proveedor)                           |
+|                                                                |
+|   +-------------------------+                                  |
+|   |   Azure SQL Database    |<-- Firewall: IP servidor local   |
+|   |   (Producci&oacute;n)           |                                  |
+|   +-----------+-------------+                                  |
+|               | TDS (puerto 1433, TLS)                         |
++===============|================================================+
+                |
+                |  Internet (conexi&oacute;n encriptada)
+                |
++===============|================================================+
+|               v            SERVIDOR LOCAL                       |
+|                                                                |
+|  +---------------------+     +----------------------------+    |
+|  |  Script PowerShell  |---->|  Archivos de Snapshot      |    |
+|  |  (Task Scheduler)   |     |                            |    |
+|  |                     |     |  - BACPAC (DB completa)     |    |
+|  |  - sqlpackage       |     |  - CSV (por tabla)          |    |
+|  |  - bcp              |     |  - Parquet (por tabla)      |    |
+|  |  - retry + logging  |     +------------+---------------+    |
+|  +---------------------+                  |                    |
+|                                           v                    |
+|  +---------------------+     +----------------------------+    |
+|  |  Retenci&oacute;n           |     |  Motor de Consulta Local   |    |
+|  |  - 48h horarios     |     |                            |    |
+|  |  - 30d diarios      |     |  Opci&oacute;n A: SQL Server Expr. |    |
+|  |  - Limpieza auto    |     |  Opci&oacute;n B: DuckDB (recom.)  |    |
+|  +---------------------+     +------------+---------------+    |
+|                                           |                    |
+|                                           v                    |
+|                              +----------------------------+    |
+|                              |  Capa de Reportes          |    |
+|                              |                            |    |
+|                              |  - Python + pandas         |    |
+|                              |  - DuckDB queries          |    |
+|                              |  - Power BI / Excel        |    |
+|                              +----------------------------+    |
++================================================================+</div>
+<div class="figure-caption">Figura 2. Arquitectura general del sistema de snapshot.</div>
+
+<h2 id="sec4-2">Flujo de datos por ejecuci&oacute;n</h2>
+<p>Cada ejecuci&oacute;n del proceso automatizado sigue la siguiente secuencia:</p>
+<ol>
+    <li><strong>Validar credenciales:</strong> lectura desde almac&eacute;n seguro (Credential Manager), verificaci&oacute;n de vigencia.</li>
+    <li><strong>Verificar conectividad:</strong> test TCP al puerto 1433, query de prueba <code>SELECT 1</code>. Si falla, retry con backoff exponencial; si persiste, notificar y abortar.</li>
+    <li><strong>Exportar datos:</strong> seg&uacute;n la estrategia definida &mdash; BACPAC completo o tablas individuales v&iacute;a <code>bcp</code>/DuckDB.</li>
+    <li><strong>Importar a motor local:</strong> BACPAC a SQL Server Express, o CSV/Parquet a DuckDB.</li>
+    <li><strong>Validar integridad:</strong> comparar conteos de registros entre origen y destino, verificar tablas no vac&iacute;as.</li>
+    <li><strong>Limpiar snapshots antiguos:</strong> aplicar pol&iacute;tica de retenci&oacute;n.</li>
+    <li><strong>Notificar resultado:</strong> log local, webhook o email en caso de fallo.</li>
+</ol>
+
+<!-- ================================================================
+     5. TOOLS
+     ================================================================ -->
+<h1 id="sec5" class="page-break">Herramientas y requerimientos de infraestructura</h1>
+
+<h2 class="no-number">Requerimientos del servidor local</h2>
+<ul>
+    <li><strong>Sistema operativo:</strong> Windows 10/11 Pro o Windows Server 2019+</li>
+    <li><strong>Almacenamiento:</strong> m&iacute;nimo 3x el tama&ntilde;o de la base de datos (para snapshot activo + anterior + temporal)</li>
+    <li><strong>Red:</strong> conexi&oacute;n a internet estable con acceso al puerto 1433 TCP</li>
+    <li><strong>IP:</strong> fija o con servicio DNS din&aacute;mico (para regla de firewall en Azure)</li>
+</ul>
+
+<h2 class="no-number">Herramientas CLI</h2>
+<table>
+    <thead>
+        <tr><th>Herramienta</th><th>Prop&oacute;sito</th><th>Instalaci&oacute;n</th></tr>
+    </thead>
+    <tbody>
+        <tr><td><code>sqlpackage</code></td><td>Export/Import de archivos BACPAC</td><td><code>winget install Microsoft.SqlPackage</code></td></tr>
+        <tr><td><code>sqlcmd</code> (go-sqlcmd)</td><td>Queries ad-hoc, pruebas de conexi&oacute;n</td><td><code>winget install sqlcmd</code></td></tr>
+        <tr><td><code>bcp</code></td><td>Export de tablas individuales a CSV</td><td>Incluido con ODBC Driver 18</td></tr>
+        <tr><td>ODBC Driver 18</td><td>Conectividad TDS a Azure SQL</td><td><code>winget install Microsoft.msodbcsql</code></td></tr>
+        <tr><td>DuckDB</td><td>Motor anal&iacute;tico local sobre Parquet/CSV</td><td><code>winget install DuckDB.cli</code></td></tr>
+        <tr><td>Azure CLI (opcional)</td><td>Gesti&oacute;n de Blob Storage o Key Vault</td><td><code>winget install Microsoft.AzureCLI</code></td></tr>
+        <tr><td>SQL Server Express (opcional)</td><td>Motor local compatible T-SQL</td><td><code>winget install Microsoft.SQLServer.2022.Express</code></td></tr>
+    </tbody>
+</table>
+<div class="figure-caption">Tabla 2. Herramientas requeridas en el servidor local.</div>
+
+<p>Todas las herramientas son gratuitas y se instalan mediante <code>winget</code>, el gestor de paquetes nativo de Windows.</p>
+
+<!-- ================================================================
+     6. EXPORT METHODS
+     ================================================================ -->
+<h1 id="sec6" class="page-break">M&eacute;todos de exportaci&oacute;n</h1>
+
+<p>Se dispone de tres m&eacute;todos para extraer datos de Azure SQL. Cada uno tiene caracter&iacute;sticas distintas en cuanto a completitud, velocidad e impacto sobre la base de producci&oacute;n.</p>
+
+<h2 id="sec6-1">M&eacute;todo BACPAC &mdash; Snapshot completo</h2>
+<p>Utiliza <code>sqlpackage /Action:Export</code> para generar un archivo <code>.bacpac</code> que contiene la estructura completa de la base de datos (tablas, vistas, stored procedures, &iacute;ndices, constraints) junto con todos los datos.</p>
+
+<p><strong>Ventajas:</strong> copia fiel y completa; restaurable a SQL Server Express local.</p>
+<p><strong>Desventajas:</strong> alto consumo de DTU en la base de producci&oacute;n; m&aacute;s lento que otros m&eacute;todos.</p>
+
+<table>
+    <thead>
+        <tr><th>Tama&ntilde;o de BD</th><th>Tiempo de export</th><th>Tiempo de import</th><th>Espacio en disco</th></tr>
+    </thead>
+    <tbody>
+        <tr><td>1 GB</td><td>3&ndash;8 min</td><td>2&ndash;5 min</td><td>~300 MB</td></tr>
+        <tr><td>5 GB</td><td>15&ndash;30 min</td><td>10&ndash;20 min</td><td>~1.5 GB</td></tr>
+        <tr><td>10 GB</td><td>30&ndash;60 min</td><td>20&ndash;40 min</td><td>~3 GB</td></tr>
+        <tr><td>50 GB</td><td>2&ndash;5 horas</td><td>1&ndash;3 horas</td><td>~15 GB</td></tr>
+    </tbody>
+</table>
+<div class="figure-caption">Tabla 3. Estimaciones de tiempo y espacio para export BACPAC.</div>
+
+<h2 id="sec6-2">M&eacute;todo BCP &mdash; Export de tablas individuales</h2>
+<p>Utiliza la utilidad <code>bcp</code> (Bulk Copy Program) para exportar tablas o vistas individuales como archivos CSV. Permite seleccionar exactamente qu&eacute; datos exportar mediante queries personalizadas.</p>
+
+<p><strong>Ventajas:</strong> bajo consumo de DTU; r&aacute;pido; exporta solo lo necesario; queries filtrables.</p>
+<p><strong>Desventajas:</strong> no incluye estructura de la base; no es transaccionalmente consistente entre tablas; requiere generar headers por separado.</p>
+
+<p><strong>Recomendado para:</strong> generaci&oacute;n de reportes entre cat&aacute;logos espec&iacute;ficos donde no se requiere la base de datos completa.</p>
+
+<h2 id="sec6-3">M&eacute;todo DuckDB directo a Parquet</h2>
+<p>Utiliza la extensi&oacute;n comunitaria <code>mssql</code> de DuckDB para conectarse directamente a Azure SQL y exportar tablas a formato Apache Parquet con compresi&oacute;n ZSTD.</p>
+
+<p><strong>Ventajas:</strong> un solo paso (Azure SQL a Parquet); formato columnar optimizado para analytics; archivos inmediatamente consultables con DuckDB.</p>
+<p><strong>Desventajas:</strong> extensi&oacute;n experimental; soporte limitado de tipos de datos.</p>
+
+<div class="nota">Si la extensi&oacute;n <code>mssql</code> de DuckDB presenta inestabilidad, se utiliza como fallback el pipeline: <code>bcp</code> a CSV, seguido de importaci&oacute;n a DuckDB.</div>
+
+<h2 class="no-number">Comparativa de m&eacute;todos</h2>
+<table>
+    <thead>
+        <tr><th>Criterio</th><th>BACPAC</th><th>BCP (CSV)</th><th>DuckDB (Parquet)</th></tr>
+    </thead>
+    <tbody>
+        <tr><td>Completitud</td><td>Schema + datos</td><td>Solo datos</td><td>Solo datos</td></tr>
+        <tr><td>Granularidad</td><td>DB completa o tablas selectas</td><td>Por tabla/query</td><td>Por tabla/query</td></tr>
+        <tr><td>Impacto DTU</td><td>Alto</td><td>Bajo-Medio</td><td>Bajo-Medio</td></tr>
+        <tr><td>Formato de salida</td><td>.bacpac (ZIP)</td><td>.csv</td><td>.parquet (columnar)</td></tr>
+        <tr><td>Restaurable a SQL Server</td><td>S&iacute; (nativo)</td><td>V&iacute;a BULK INSERT</td><td>No directo</td></tr>
+        <tr><td>Consultable con DuckDB</td><td>No directo</td><td>S&iacute;</td><td>S&iacute; (nativo)</td></tr>
+        <tr><td>Estabilidad</td><td>Productiva</td><td>Productiva</td><td>Experimental</td></tr>
+    </tbody>
+</table>
+<div class="figure-caption">Tabla 4. Comparativa de m&eacute;todos de exportaci&oacute;n.</div>
+
+<!-- ================================================================
+     7. LOCAL QUERY ENGINE
+     ================================================================ -->
+<h1 id="sec7" class="page-break">Motor de consulta local</h1>
+
+<p>Una vez que los datos residen en el servidor local, se requiere un motor de base de datos para consultarlos. Se evaluaron tres opciones:</p>
+
+<table>
+    <thead>
+        <tr><th>Criterio</th><th>SQL Server Express</th><th>DuckDB</th><th>SQLite</th></tr>
+    </thead>
+    <tbody>
+        <tr><td>Tama&ntilde;o de instalaci&oacute;n</td><td>~1.5 GB (servicio Windows)</td><td>~30 MB (sin servicio)</td><td>~2 MB</td></tr>
+        <tr><td>L&iacute;mite de tama&ntilde;o</td><td>10 GB por base de datos</td><td>Sin l&iacute;mite pr&aacute;ctico</td><td>~281 TB te&oacute;rico</td></tr>
+        <tr><td>Rendimiento anal&iacute;tico</td><td>Bueno</td><td>Excelente (columnar)</td><td>Aceptable</td></tr>
+        <tr><td>Compatibilidad T-SQL</td><td>100%</td><td>Parcial</td><td>No</td></tr>
+        <tr><td>Import desde Parquet</td><td>No nativo</td><td>Nativo</td><td>No</td></tr>
+        <tr><td>Uso desde Python</td><td>pyodbc / sqlalchemy</td><td><code>import duckdb</code></td><td><code>import sqlite3</code></td></tr>
+        <tr><td>Concurrencia</td><td>Multi-usuario</td><td>Mono-escritor</td><td>Mono-escritor</td></tr>
+    </tbody>
+</table>
+<div class="figure-caption">Tabla 5. Comparativa de motores de consulta local.</div>
+
+<p><strong>Recomendaci&oacute;n: DuckDB</strong> es el motor &oacute;ptimo para el caso de uso de reportes entre cat&aacute;logos, dado que:</p>
+<ul>
+    <li>No requiere instalaci&oacute;n de servicio: se abre como un archivo.</li>
+    <li>Motor columnar optimizado para aggregaciones y JOINs anal&iacute;ticos.</li>
+    <li>Lee archivos Parquet directamente sin necesidad de importarlos.</li>
+    <li>Integraci&oacute;n nativa con Python (<code>import duckdb</code>) para scripts de reportes.</li>
+</ul>
+
+<p>Si se requiere compatibilidad T-SQL exacta con la base de origen (por ejemplo, para reutilizar stored procedures existentes), SQL Server Express es la alternativa adecuada.</p>
+
+<!-- ================================================================
+     8. SECURITY
+     ================================================================ -->
+<h1 id="sec8" class="page-break">Seguridad y manejo de credenciales</h1>
+
+<h2 class="no-number">Principios de seguridad</h2>
+<ol>
+    <li>Las credenciales <strong>nunca</strong> se almacenan en texto plano dentro de scripts o archivos de configuraci&oacute;n.</li>
+    <li>Las credenciales <strong>nunca</strong> se incluyen en repositorios de c&oacute;digo.</li>
+    <li>Se utilizan mecanismos de almacenamiento encriptado nativos del sistema operativo.</li>
+    <li>Se establece un calendario de rotaci&oacute;n de credenciales con el proveedor.</li>
+</ol>
+
+<h2 class="no-number">M&eacute;todos de almacenamiento seguro</h2>
+<table>
+    <thead>
+        <tr><th>M&eacute;todo</th><th>Seguridad</th><th>Complejidad</th><th>Compatible con Task Scheduler</th></tr>
+    </thead>
+    <tbody>
+        <tr><td>Windows Credential Manager</td><td>Alta (DPAPI)</td><td>Baja</td><td>S&iacute;</td></tr>
+        <tr><td>DPAPI con <code>Export-Clixml</code></td><td>Alta (DPAPI)</td><td>M&iacute;nima</td><td>S&iacute; (mismo usuario)</td></tr>
+        <tr><td>Variables de entorno del sistema</td><td>Media</td><td>M&iacute;nima</td><td>S&iacute;</td></tr>
+        <tr><td>Azure Key Vault</td><td>Muy alta</td><td>Alta</td><td>S&iacute; (requiere <code>az login</code>)</td></tr>
+    </tbody>
+</table>
+<div class="figure-caption">Tabla 6. M&eacute;todos de almacenamiento seguro de credenciales.</div>
+
+<p><strong>Recomendaci&oacute;n:</strong> Windows Credential Manager para implementaci&oacute;n inicial, dado su balance entre seguridad y simplicidad. Migrar a Azure Key Vault si se requiere gesti&oacute;n centralizada en el futuro.</p>
+
+<!-- ================================================================
+     9. AUTOMATION
+     ================================================================ -->
+<h1 id="sec9" class="page-break">Automatizaci&oacute;n y pol&iacute;tica de retenci&oacute;n</h1>
+
+<h2 class="no-number">Mecanismo de ejecuci&oacute;n</h2>
+<p>El script de exportaci&oacute;n se registra como tarea programada en <strong>Windows Task Scheduler</strong>, configurado para ejecutarse cada hora (o seg&uacute;n la frecuencia que se defina). La tarea incluye:</p>
+<ul>
+    <li>Ejecuci&oacute;n como usuario <code>SYSTEM</code> con privilegios elevados.</li>
+    <li>Reintento autom&aacute;tico (2 reintentos, intervalo de 5 minutos).</li>
+    <li>L&iacute;mite de ejecuci&oacute;n de 2 horas.</li>
+    <li>Ejecuci&oacute;n solo si hay red disponible.</li>
+    <li>Prevenci&oacute;n de instancias concurrentes.</li>
+</ul>
+
+<h2 class="no-number">Pol&iacute;tica de retenci&oacute;n</h2>
+<table>
+    <thead>
+        <tr><th>Tipo de snapshot</th><th>Retenci&oacute;n</th><th>Limpieza</th></tr>
+    </thead>
+    <tbody>
+        <tr><td>Horarios</td><td>48 horas</td><td>Autom&aacute;tica</td></tr>
+        <tr><td>Diarios (00:00 hrs)</td><td>30 d&iacute;as</td><td>Autom&aacute;tica</td></tr>
+        <tr><td>Semanales (domingo 00:00)</td><td>12 semanas</td><td>Autom&aacute;tica</td></tr>
+        <tr><td>Mensuales (d&iacute;a 1, 00:00)</td><td>12 meses</td><td>Revisi&oacute;n manual</td></tr>
+    </tbody>
+</table>
+<div class="figure-caption">Tabla 7. Pol&iacute;tica de retenci&oacute;n de snapshots.</div>
+
+<!-- ================================================================
+     10. VALIDATION
+     ================================================================ -->
+<h1 id="sec10" class="page-break">Validaci&oacute;n y criterios de aceptaci&oacute;n</h1>
+
+<p>Al completar cada ciclo de exportaci&oacute;n e importaci&oacute;n, el script ejecuta autom&aacute;ticamente las siguientes validaciones:</p>
+<ol>
+    <li><strong>Comparaci&oacute;n de conteos:</strong> se verifica que el n&uacute;mero de registros de cada tabla en el snapshot local coincida con el conteo en Azure SQL. Tolerancia: 0% para cat&aacute;logos est&aacute;ticos, &lt;1% para tablas transaccionales en movimiento.</li>
+    <li><strong>Verificaci&oacute;n de tablas no vac&iacute;as:</strong> ninguna tabla definida en el esquema de export debe quedar sin registros.</li>
+    <li><strong>Prueba de consulta cruzada:</strong> se ejecuta un JOIN entre al menos dos tablas del snapshot local para confirmar la integridad relacional.</li>
+</ol>
+
+<h2 class="no-number">Criterios de aceptaci&oacute;n del sistema completo</h2>
+<ul class="checklist">
+    <li>Todas las tablas definidas se exportaron sin error.</li>
+    <li>El conteo de registros coincide entre Azure y el snapshot local.</li>
+    <li>Se puede ejecutar un JOIN entre 2+ tablas del snapshot local.</li>
+    <li>El proceso completo termina dentro de la ventana de tiempo definida.</li>
+    <li>Los snapshots antiguos se eliminan seg&uacute;n la pol&iacute;tica de retenci&oacute;n.</li>
+    <li>En caso de fallo, se genera notificaci&oacute;n y el snapshot anterior permanece disponible.</li>
+    <li>Se genera exitosamente un reporte real desde el snapshot local.</li>
+</ul>
+
+<!-- ================================================================
+     11. IMPLEMENTATION PHASES
+     ================================================================ -->
+<h1 id="sec11" class="page-break">Plan de implementaci&oacute;n por fases</h1>
+
+<h2 class="no-number">Fase 0: Negociaci&oacute;n con proveedor</h2>
+<p><strong>Prerequisito.</strong> Se env&iacute;a solicitud formal al proveedor para obtener acceso de lectura (Escenario A). Si se niega, se negocia por orden de preferencia: Escenario B, luego C. Se documenta el acuerdo alcanzado.</p>
+<p><strong>Entregable:</strong> credenciales validadas o mecanismo de acceso acordado.</p>
+
+<h2 class="no-number">Fase 1: Setup de infraestructura local</h2>
+<p>Instalaci&oacute;n de herramientas CLI, configuraci&oacute;n de credenciales en Credential Manager y validaci&oacute;n de conectividad TCP al servidor Azure SQL.</p>
+<p><strong>Entregable:</strong> conexi&oacute;n funcional verificada con query <code>SELECT @@VERSION</code>.</p>
+
+<h2 class="no-number">Fase 2: Dise&ntilde;o y primer export manual</h2>
+<p>Catalogar tablas disponibles, estimar tama&ntilde;os, decidir estrategia de export (BACPAC completo vs. tablas selectas) y ejecutar el primer snapshot manualmente para validar el flujo.</p>
+<p><strong>Entregable:</strong> primer snapshot local funcional; matriz de tablas documentada.</p>
+
+<h2 class="no-number">Fase 3: Pipeline automatizado</h2>
+<p>Desarrollo del script PowerShell completo con logging, retry y notificaciones. Configuraci&oacute;n del import a motor local e inscripci&oacute;n en Task Scheduler. Periodo de prueba monitoreada de 24&ndash;48 horas.</p>
+<p><strong>Entregable:</strong> pipeline automatizado operando.</p>
+
+<h2 class="no-number">Fase 4: Validaci&oacute;n y hardening</h2>
+<p>Implementaci&oacute;n de validaci&oacute;n de integridad post-import, configuraci&oacute;n de pol&iacute;tica de retenci&oacute;n, pruebas de escenarios de fallo y generaci&oacute;n del primer reporte real desde snapshot local.</p>
+<p><strong>Entregable:</strong> sistema validado, documentado y primer reporte de impacto generado.</p>
+
+<div class="diagram">Fase 0             Fase 1            Fase 2            Fase 3            Fase 4
+Negociaci&oacute;n        Setup local       Primer export     Automatizaci&oacute;n    Validaci&oacute;n
++-----------+     +-----------+     +-----------+     +-----------+     +-----------+
+| Solicitar |---->| Instalar  |---->| Catalogar |---->| Script    |---->| Integridad|
+| acceso al |     | tools CLI |     | tablas    |     | PowerShell|     | Retenci&oacute;n |
+| proveedor |     | Validar   |     | Export    |     | Task      |     | Pruebas   |
+|           |     | conexi&oacute;n  |     | manual    |     | Scheduler |     | 1er report|
++-----------+     +-----------+     +-----------+     +-----------+     +-----------+</div>
+<div class="figure-caption">Figura 3. Cronograma de implementaci&oacute;n por fases.</div>
+
+<!-- ================================================================
+     12. CONSIDERATIONS
+     ================================================================ -->
+<h1 id="sec12" class="page-break">Consideraciones legales, t&eacute;cnicas y de continuidad</h1>
+
+<h2 class="no-number">Consideraciones legales y contractuales</h2>
+<ul>
+    <li><strong>Propiedad de datos:</strong> los datos generados en la operaci&oacute;n del negocio son propiedad de la organizaci&oacute;n, no del proveedor. Esto debe estar expl&iacute;cito en el contrato.</li>
+    <li><strong>Obligaci&oacute;n de acceso:</strong> el proveedor tiene obligaci&oacute;n contractual (o deber&iacute;a tenerla) de facilitar acceso a los datos propios del cliente.</li>
+    <li><strong>Portabilidad:</strong> si el contrato actual no incluye cl&aacute;usula de portabilidad de datos, se recomienda negociar su inclusi&oacute;n en la pr&oacute;xima renovaci&oacute;n.</li>
+    <li><strong>Cumplimiento normativo:</strong> verificar que la copia local de datos cumpla con regulaciones aplicables de protecci&oacute;n de datos personales.</li>
+</ul>
+
+<h2 class="no-number">Consideraciones t&eacute;cnicas</h2>
+<ul>
+    <li><strong>Impacto en producci&oacute;n:</strong> la exportaci&oacute;n consume DTU de la base en Azure. Acordar con el proveedor ventanas de export o habilitaci&oacute;n de read replica.</li>
+    <li><strong>Ancho de banda:</strong> un export de 5 GB sobre internet puede tardar 10&ndash;30 minutos. Programar en horarios de bajo tr&aacute;fico.</li>
+    <li><strong>Consistencia transaccional:</strong> el export tabla por tabla v&iacute;a <code>bcp</code> no es transaccionalmente consistente entre tablas. Para reportes peri&oacute;dicos esto es aceptable; para consistencia estricta, utilizar BACPAC.</li>
+    <li><strong>Cambios de esquema:</strong> si el proveedor modifica la estructura de tablas sin previo aviso, el script de export puede fallar. Implementar detecci&oacute;n de cambios de schema.</li>
+</ul>
+
+<h2 class="no-number">Consideraciones de continuidad</h2>
+<ul>
+    <li><strong>Revocaci&oacute;n de acceso:</strong> los snapshots locales existentes permanecen disponibles como respaldo de &uacute;ltimo recurso.</li>
+    <li><strong>Fallo del servidor local:</strong> configurar los snapshots en un segundo disco o ruta de respaldo.</li>
+    <li><strong>Cambio de IP:</strong> solicitar actualizaci&oacute;n de regla de firewall al proveedor, o utilizar VPN con IP fija.</li>
+</ul>
+
+<!-- ================================================================
+     13. REFERENCES
+     ================================================================ -->
+<h1 id="sec13" class="page-break">Referencias</h1>
+
+<h2 class="no-number">Documentaci&oacute;n oficial de Microsoft</h2>
+<ol>
+    <li>Microsoft. &laquo;SqlPackage Export&raquo;. <em>Microsoft Learn</em>. https://learn.microsoft.com/en-us/sql/tools/sqlpackage/sqlpackage-export</li>
+    <li>Microsoft. &laquo;Export an Azure SQL Database to a BACPAC file&raquo;. <em>Microsoft Learn</em>. https://learn.microsoft.com/en-us/azure/azure-sql/database/database-export</li>
+    <li>Microsoft. &laquo;Automated backups &mdash; Azure SQL Database&raquo;. <em>Microsoft Learn</em>. https://learn.microsoft.com/en-us/azure/azure-sql/database/automated-backups-overview</li>
+    <li>Microsoft. &laquo;bcp Utility&raquo;. <em>Microsoft Learn</em>. https://learn.microsoft.com/en-us/sql/tools/bcp-utility</li>
+    <li>Microsoft. &laquo;sqlcmd utility&raquo;. <em>Microsoft Learn</em>. https://learn.microsoft.com/en-us/sql/tools/sqlcmd/sqlcmd-utility</li>
+    <li>Microsoft. &laquo;Azure SQL Database firewall rules&raquo;. <em>Microsoft Learn</em>. https://learn.microsoft.com/en-us/azure/azure-sql/database/firewall-configure</li>
+    <li>Microsoft. &laquo;Copy a transactionally consistent database &mdash; Azure SQL Database&raquo;. <em>Microsoft Learn</em>. https://learn.microsoft.com/en-us/azure/azure-sql/database/database-copy</li>
+</ol>
+
+<h2 class="no-number">DuckDB</h2>
+<ol start="8">
+    <li>DuckDB Foundation. &laquo;MSSQL Extension&raquo;. <em>DuckDB Community Extensions</em>. https://duckdb.org/community_extensions/extensions/mssql</li>
+    <li>DuckDB Foundation. &laquo;Azure Extension&raquo;. <em>DuckDB Documentation</em>. https://duckdb.org/docs/stable/core_extensions/azure</li>
+    <li>DuckDB Foundation. &laquo;Parquet Import&raquo;. <em>DuckDB Documentation</em>. https://duckdb.org/docs/stable/guides/file_formats/parquet_import</li>
+</ol>
+
+<!-- ================================================================
+     FOOTER
+     ================================================================ -->
+<div class="doc-footer mt-1">
+    <em>Documento de uso interno &mdash; [Nombre de la Organizaci&oacute;n] &mdash; Febrero 2026 &mdash; v1.0</em>
+</div>
+
+</body>
+</html>
